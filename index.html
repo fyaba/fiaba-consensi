@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIABA — Modulo Consensi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --color-bg: #ECE0C8;
+    --color-surface: #F4ECDD;
+    --color-obsidian: #000000;
+    --color-text: #000000;
+    --color-text-soft: #2C2B2A;
+    --color-accent: #A2542B;
+    --color-error: #B23A2E;
+    --color-divider: color-mix(in srgb, #000000 16%, transparent);
+
+    --color-neutral-600: #7B7A77;
+    --color-neutral-700: #5F5E5B;
+    --color-accent-100: #FFF1E8;
+    --color-accent-700: #884B2C;
+
+    --font-heading: "Fraunces", "Iowan Old Style", Georgia, serif;
+    --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
+    --font-heading-weight: 600;
+
+    --space-1: 4.6px; --space-2: 9.2px; --space-3: 13.8px; --space-4: 18.4px;
+    --space-6: 27.6px; --space-8: 36.8px;
+    --radius-sm: 2px; --radius-md: 4px; --radius-lg: 7px;
+    --shadow-sm: 0 1px 2px color-mix(in srgb,#000000 14%,transparent);
+  }
+
+  * { box-sizing: border-box; }
+  html { height: 100%; }
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: var(--space-6) var(--space-6) var(--space-8);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .heading { font-family: var(--font-heading); font-weight: var(--font-heading-weight); }
+
+  .card {
+    width: 100%;
+    max-width: 480px;
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8) var(--space-6);
+    margin-top: var(--space-8);
+  }
+
+  @media (max-width: 480px) {
+    body { padding: var(--space-4) var(--space-3) var(--space-6); }
+    .card { padding: var(--space-6) var(--space-4); margin-top: var(--space-4); }
+  }
+
+  .screen { display: none; }
+  .screen.visible { display: block; animation: fade 0.4s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .progress-dots { display: flex; gap: var(--space-2); justify-content: center; margin-bottom: var(--space-8); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-divider); }
+  .dot.active { background: var(--color-accent); }
+
+  .hr { border: none; border-top: 1px solid var(--color-divider); margin: var(--space-6) 0; }
+
+  .field { margin-bottom: var(--space-4); }
+  label { display: block; font-size: 12px; color: var(--color-neutral-700); margin-bottom: var(--space-1); letter-spacing: 0.02em; }
+  .input, select {
+    width: 100%; padding: var(--space-2) 0; background: transparent; border: none;
+    border-bottom: 1px solid var(--color-divider); color: var(--color-text);
+    font-family: var(--font-body); font-size: 16px; -webkit-appearance: none; appearance: none;
+    border-radius: 0;
+  }
+  .input:focus, select:focus { outline: none; border-bottom-color: var(--color-accent); }
+  .input.field-error, select.field-error { border-bottom-color: var(--color-error); }
+  .step-error { display: none; color: var(--color-error); font-size: 13px; margin: 0 0 var(--space-4); }
+  .step-error.visible { display: block; }
+  select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%235F5E5B'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right center;
+    padding-right: var(--space-4);
+  }
+
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) 0; border-bottom: 1px solid var(--color-divider); gap: var(--space-4); cursor: pointer; }
+  .toggle-row span { font-size: 14px; line-height: 1.4; }
+  .toggle { flex-shrink: 0; width: 42px; height: 24px; border-radius: 12px; border: 1px solid var(--color-divider); background: transparent; position: relative; transition: border-color 0.2s; }
+  .toggle.on { border-color: var(--color-accent); }
+  .toggle-knob { width: 16px; height: 16px; border-radius: 50%; background: var(--color-text); position: absolute; top: 3px; left: 3px; transition: left 0.2s, background 0.2s; }
+  .toggle.on .toggle-knob { left: 22px; background: var(--color-accent); }
+
+  .btn {
+    display: block; width: 100%; padding: var(--space-3) var(--space-4);
+    background: transparent; border: 1px solid var(--color-text); border-radius: var(--radius-sm);
+    color: var(--color-text); font-family: var(--font-body); font-size: 15px; font-weight: 500;
+    cursor: pointer; text-align: center; margin-top: var(--space-2); transition: background 0.15s;
+  }
+  .btn:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
+  .btn-accent { border-color: var(--color-accent); color: var(--color-accent); }
+  .btn-accent:hover { background: var(--color-accent-100); }
+  .btn-ghost {
+    border: none; background: none; color: var(--color-neutral-700); font-size: 13px;
+    padding: var(--space-2) 0; width: auto; display: block; margin: var(--space-4) auto 0; cursor: pointer;
+  }
+
+  .checkbox-row { display: flex; align-items: flex-start; gap: var(--space-3); margin: var(--space-4) 0; }
+  .checkbox-row input[type=checkbox] {
+    width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0;
+    border: 1px solid var(--color-text); border-radius: var(--radius-sm);
+    appearance: none; -webkit-appearance: none; cursor: pointer; position: relative; background: transparent;
+  }
+  .checkbox-row input[type=checkbox]:checked { border-color: var(--color-accent); }
+  .checkbox-row input[type=checkbox]:checked::after {
+    content: ''; position: absolute; left: 6px; top: 2px; width: 5px; height: 9px;
+    border: solid var(--color-accent); border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+  .checkbox-row label { font-size: 14px; line-height: 1.5; color: var(--color-text-soft); }
+  .checkbox-row a { color: var(--color-accent); text-decoration: underline; }
+
+  #signature-placeholder {
+    border: 1px dashed var(--color-divider); border-radius: var(--radius-md); height: 150px;
+    display: flex; align-items: center; justify-content: center; color: var(--color-neutral-600);
+    font-size: 13px; text-align: center;
+  }
+  .signature-wrap {
+    border: 1px dashed var(--color-divider); border-radius: var(--radius-md); height: 150px;
+    touch-action: none; position: relative;
+  }
+  .signature-wrap.has-error { border-color: var(--color-error); }
+  #signature-canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+  .signature-hint {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: var(--color-neutral-600); font-size: 13px; pointer-events: none;
+  }
+  .signature-wrap.signed .signature-hint { display: none; }
+  .submit-error { display: none; color: var(--color-error); font-size: 13px; margin: var(--space-3) 0 0; text-align: center; }
+  .submit-error.visible { display: block; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: color-mix(in srgb, #000000 45%, transparent); z-index: 100; align-items: center; justify-content: center; padding: var(--space-4); }
+  .modal-overlay.visible { display: flex; }
+  .modal-box { background: var(--color-bg); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); max-width: 440px; width: 100%; max-height: 80vh; overflow-y: auto; padding: var(--space-6); }
+  .modal-box h3 { font-size: 17px; margin: 0 0 var(--space-3); }
+  .modal-box p { font-size: 13px; line-height: 1.6; color: var(--color-text-soft); margin: 0 0 var(--space-3); }
+  .modal-draft-warning { color: var(--color-error); font-size: 12px; font-weight: 500; }
+</style>
+</head>
+<body>
+  <div class="card">
+
+    <section id="screen-intro" class="screen visible">
+      <div class="heading" style="font-size: 28px; text-align: center; margin-bottom: var(--space-1);">FIABA</div>
+      <div style="text-align: center; color: var(--color-neutral-700); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: var(--space-8);">Atelier della Memoria e del Segno Permanente</div>
+      <button class="btn btn-accent" style="margin-top: var(--space-6);" onclick="startFlow(false)">Prima volta qui</button>
+      <button class="btn" onclick="startFlow(true)">Sono già stato qui</button>
+      <p style="font-size: 11px; color: var(--color-neutral-600); text-align: center; margin-top: var(--space-3);">Solo se hai già compilato questo modulo digitale in una visita precedente.</p>
+    </section>
+
+    <section id="screen-step1" class="screen">
+      <div class="progress-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+      <h2 class="heading" style="font-size: 21px; margin-bottom: var(--space-1);">Prima di tutto, tu.</h2>
+      <p style="color: var(--color-neutral-700); font-size: 13px; margin-bottom: var(--space-6);" id="step1-subtitle">I tuoi dati restano nell'archivio dell'atelier. Nessun uso esterno, nessuna cessione.</p>
+      <p class="step-error" id="step1-error">Compila i campi evidenziati prima di continuare.</p>
+
+      <div class="field"><label>Nome</label><input class="input" type="text" id="f-nome" autocomplete="given-name"></div>
+      <div class="field"><label>Cognome</label><input class="input" type="text" id="f-cognome" autocomplete="family-name"></div>
+      <div id="step1-full-fields">
+      <div class="field"><label>Data di nascita</label><input class="input" type="date" id="f-data-nascita" autocomplete="bday"></div>
+      <div class="field"><label>Luogo di nascita</label><input class="input" type="text" id="f-luogo-nascita"></div>
+      <div class="field"><label>Indirizzo</label><input class="input" type="text" id="f-indirizzo" autocomplete="street-address"></div>
+      <div class="field"><label>Comune</label><input class="input" type="text" id="f-comune" autocomplete="address-level2"></div>
+      <div class="field"><label>Cellulare (facoltativo)</label><input class="input" type="tel" id="f-cellulare" autocomplete="tel"></div>
+      <div class="field"><label>Email</label><input class="input" type="email" id="f-email" autocomplete="email"></div>
+      <div class="field">
+        <label>Nazionalità</label>
+        <select id="f-nazionalita">
+          <option value="">—</option>
+          <option value="ITALIANO">Italiana</option>
+          <option value="STRANIERO">Estera</option>
+        </select>
+      </div>
+      </div>
+
+      <button class="btn btn-accent" onclick="if(validateStep1()) goToStep(2)">Avanti</button>
+    </section>
+
+    <section id="screen-step2" class="screen">
+      <div class="progress-dots"><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
+      <h2 class="heading" style="font-size: 21px; margin-bottom: var(--space-1);">La tua pelle, le nostre mani.</h2>
+      <p style="color: var(--color-neutral-700); font-size: 13px; margin-bottom: var(--space-4);">Queste domande ci servono per lavorare in sicurezza. Rispondi con un tocco — solo ciò che è rilevante.</p>
+      <p class="step-error" id="step2-error">Specifica quali allergie prima di continuare.</p>
+
+      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Gravidanza o allattamento</span><div class="toggle" data-field="gravidanza_allattamento"><div class="toggle-knob"></div></div></div>
+      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Farmaci anticoagulanti</span><div class="toggle" data-field="anticoagulanti"><div class="toggle-knob"></div></div></div>
+      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle')); toggleAllergieDettaglio()"><span>Allergie note (lattice, nichel, anestetici...)</span><div class="toggle" data-field="allergie"><div class="toggle-knob"></div></div></div>
+      <div class="field" id="field-allergie-dettaglio" style="display: none; margin-top: var(--space-3);">
+        <label>Specifica quali</label><input class="input" type="text" id="f-allergie-dettaglio">
+      </div>
+      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Diabete</span><div class="toggle" data-field="diabete"><div class="toggle-knob"></div></div></div>
+      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Cheloidi o cicatrici ipertrofiche</span><div class="toggle" data-field="cheloidi"><div class="toggle-knob"></div></div></div>
+      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Epilessia</span><div class="toggle" data-field="epilessia"><div class="toggle-knob"></div></div></div>
+      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Patologie cardiache</span><div class="toggle" data-field="patologie_cardiache"><div class="toggle-knob"></div></div></div>
+      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Patologie dermatologiche in corso</span><div class="toggle" data-field="patologie_dermatologiche"><div class="toggle-knob"></div></div></div>
+
+      <div class="field" style="margin-top: var(--space-6);"><label>Farmaci attualmente in uso (facoltativo)</label><input class="input" type="text" id="f-farmaci"></div>
+      <div class="field"><label>Altro da segnalare (facoltativo)</label><input class="input" type="text" id="f-altro"></div>
+
+      <p style="color: var(--color-neutral-600); font-size: 12px; font-style: italic; text-align: center; margin: var(--space-6) 0;">Se qualcosa cambia tra oggi e la seduta, dillo. È più importante di qualsiasi modulo.</p>
+
+      <button class="btn btn-accent" onclick="if(validateStep2()) goToStep(3)">Avanti</button>
+      <button class="btn-ghost" onclick="goToStep(1)">Indietro</button>
+    </section>
+
+    <section id="screen-step3" class="screen">
+      <div class="progress-dots"><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
+      <h2 class="heading" style="font-size: 21px; margin-bottom: var(--space-1);">Il patto.</h2>
+      <p style="color: var(--color-neutral-700); font-size: 13px; margin-bottom: var(--space-4);">Un segno permanente merita un accordo chiaro.</p>
+      <p class="step-error" id="step3-error">Devi accettare il trattamento dei dati per continuare.</p>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="f-consenso-base">
+        <label for="f-consenso-base">Acconsento al trattamento dei miei dati personali e sanitari per le finalità descritte. <a href="#" onclick="openModal(); return false;">Leggi tutto</a></label>
+      </div>
+
+      <button class="btn-ghost" onclick="togglePanel()">Vuoi personalizzare i consensi? ▾</button>
+      <div id="panel-consensi" style="display: none;">
+        <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Comunicazioni commerciali</span><div class="toggle" data-field="comunicazioni_commerciali"><div class="toggle-knob"></div></div></div>
+        <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Pubblicazione immagini — solo opera</span><div class="toggle" data-field="immagini_solo_opera"><div class="toggle-knob"></div></div></div>
+        <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Pubblicazione immagini — corpo visibile</span><div class="toggle" data-field="immagini_corpo_visibile"><div class="toggle-knob"></div></div></div>
+        <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Pubblicazione immagini — completa</span><div class="toggle" data-field="immagini_completa"><div class="toggle-knob"></div></div></div>
+      </div>
+
+      <div class="hr"></div>
+      <p class="heading" style="text-align: center; font-size: 15px; margin-bottom: var(--space-3);">La tua firma chiude questo accordo e apre il lavoro.</p>
+      <div class="signature-wrap" id="signature-wrap">
+        <canvas id="signature-canvas"></canvas>
+        <div class="signature-hint" id="signature-hint">Firma qui con il dito</div>
+      </div>
+      <button class="btn-ghost" onclick="clearSignature()">Cancella firma</button>
+
+      <button class="btn btn-accent" id="btn-concludi" style="margin-top: var(--space-6);" onclick="submitAndClose()">Concludi</button>
+      <p class="submit-error" id="submit-error"></p>
+      <button class="btn-ghost" onclick="goToStep(2)">Indietro</button>
+    </section>
+
+    <section id="screen-closing" class="screen">
+      <div style="text-align: center; padding: var(--space-8) 0;">
+        <div class="heading" style="font-size: 22px; margin-bottom: var(--space-2);">Fatto.</div>
+        <p style="color: var(--color-text-soft);"><span id="closing-name"></span>il tuo archivio è aperto. Ci vediamo al tavolo.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="modal-overlay" id="modal-informativa" onclick="if(event.target===this) closeModal()">
+    <div class="modal-box">
+      <h3 class="heading">Informativa sul trattamento dei dati</h3>
+      <p class="modal-draft-warning">BOZZA — in attesa di validazione da parte del consulente privacy. Non è il testo legale definitivo.</p>
+      <p><strong>Titolare del trattamento:</strong> FIABA — Atelier della Memoria e del Segno Permanente.</p>
+      <p><strong>Finalità:</strong> esecuzione del servizio di tatuaggio, inclusa la valutazione delle condizioni di sicurezza sanitaria necessarie alla seduta.</p>
+      <p><strong>Base giuridica:</strong> consenso esplicito per i dati sanitari (art. 9 GDPR); esecuzione del servizio per gli altri dati.</p>
+      <p><strong>Destinatari:</strong> nessuno. I dati non vengono ceduti a terzi, salvo consenso separato per comunicazioni commerciali o pubblicazione immagini.</p>
+      <p><strong>Conservazione:</strong> dati anagrafici e sanitari, 10 anni. Consensi facoltativi (marketing, immagini), durata del rapporto + 2 anni salvo revoca.</p>
+      <p><strong>Diritti:</strong> accesso, rettifica, cancellazione, revoca del consenso in qualsiasi momento, contattando l'atelier direttamente.</p>
+      <button class="btn" onclick="closeModal()">Chiudi</button>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4/dist/signature_pad.umd.min.js"></script>
+<script>
+  let signaturePad = null;
+  let isReturning = false;
+
+  function startFlow(returning) {
+    isReturning = returning;
+    document.getElementById('step1-full-fields').style.display = returning ? 'none' : 'block';
+    document.getElementById('step1-subtitle').textContent = returning
+      ? 'Bentornato — solo nome e cognome per ritrovarti nell\'archivio.'
+      : 'I tuoi dati restano nell\'archivio dell\'atelier. Nessun uso esterno, nessuna cessione.';
+    goToStep(1);
+  }
+
+  function ensureSignaturePad() {
+    const canvas = document.getElementById('signature-canvas');
+    if (signaturePad) return;
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    canvas.width = canvas.offsetWidth * ratio;
+    canvas.height = canvas.offsetHeight * ratio;
+    canvas.getContext('2d').scale(ratio, ratio);
+    signaturePad = new SignaturePad(canvas, {
+      backgroundColor: 'rgba(0,0,0,0)',
+      penColor: '#000000',
+      minWidth: 1,
+      maxWidth: 2.2
+    });
+    signaturePad.addEventListener('beginStroke', () => {
+      document.getElementById('signature-wrap').classList.add('signed');
+    });
+  }
+
+  function clearSignature() {
+    if (signaturePad) signaturePad.clear();
+    document.getElementById('signature-wrap').classList.remove('signed');
+  }
+
+  function getSignatureBase64() {
+    if (!signaturePad || signaturePad.isEmpty()) return '';
+    return signaturePad.toDataURL('image/png').split(',')[1];
+  }
+
+  function goToStep(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+    document.getElementById('screen-step' + n).classList.add('visible');
+    window.scrollTo(0, 0);
+    if (n === 3) ensureSignaturePad();
+  }
+  function goToClosing() {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+    const nome = val('f-nome');
+    document.getElementById('closing-name').textContent = nome ? nome + ' ' : '';
+    document.getElementById('screen-closing').classList.add('visible');
+    window.scrollTo(0, 0);
+  }
+  function toggleSwitch(el) { el.classList.toggle('on'); }
+
+  function validateStep1() {
+    const requiredIds = isReturning
+      ? ['f-nome','f-cognome']
+      : ['f-nome','f-cognome','f-data-nascita','f-luogo-nascita','f-indirizzo','f-comune','f-email','f-nazionalita'];
+    let firstInvalid = null;
+    let valid = true;
+    requiredIds.forEach(id => {
+      const el = document.getElementById(id);
+      const empty = !el.value || !el.value.trim();
+      el.classList.toggle('field-error', empty);
+      if (empty) { valid = false; if (!firstInvalid) firstInvalid = el; }
+    });
+    document.getElementById('step1-error').classList.toggle('visible', !valid);
+    if (firstInvalid) { firstInvalid.focus(); firstInvalid.scrollIntoView({behavior:'smooth', block:'center'}); }
+    return valid;
+  }
+
+  function validateStep2() {
+    const allergieOn = document.querySelector('.toggle[data-field="allergie"]').classList.contains('on');
+    const dettaglio = document.getElementById('f-allergie-dettaglio');
+    const empty = allergieOn && (!dettaglio.value || !dettaglio.value.trim());
+    dettaglio.classList.toggle('field-error', empty);
+    document.getElementById('step2-error').classList.toggle('visible', empty);
+    if (empty) { dettaglio.focus(); dettaglio.scrollIntoView({behavior:'smooth', block:'center'}); }
+    return !empty;
+  }
+
+  function validateStep3() {
+    const consenso = document.getElementById('f-consenso-base');
+    const hasSignature = signaturePad && !signaturePad.isEmpty();
+    const wrap = document.getElementById('signature-wrap');
+    const errEl = document.getElementById('step3-error');
+
+    let message = '';
+    if (!consenso.checked) message = 'Devi accettare il trattamento dei dati per continuare.';
+    else if (!hasSignature) message = 'Manca la firma.';
+
+    wrap.classList.toggle('has-error', !hasSignature);
+    errEl.textContent = message;
+    errEl.classList.toggle('visible', !!message);
+
+    if (message && !consenso.checked) { consenso.scrollIntoView({behavior:'smooth', block:'center'}); }
+    else if (message) { wrap.scrollIntoView({behavior:'smooth', block:'center'}); }
+
+    return !message;
+  }
+
+  function toggleAllergieDettaglio() {
+    const el = document.getElementById('field-allergie-dettaglio');
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+  function togglePanel() {
+    const el = document.getElementById('panel-consensi');
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+  function openModal() { document.getElementById('modal-informativa').classList.add('visible'); }
+  function closeModal() { document.getElementById('modal-informativa').classList.remove('visible'); }
+
+  const ENDPOINT = "https://script.google.com/macros/s/AKfycbwUWtkhfrE-iW9QFyLfjRwM9yvTRJhm7ZjNjtEDJpNewDWhATNMaRHoVlGlv2XxxJ4C/exec";
+  const TOKEN = "99b9fb4c16df1867069ddc54fcaf3e43c8bd36766ad615117593b95aa27f84a";
+
+  function toggleOn(field) {
+    return document.querySelector('.toggle[data-field="' + field + '"]').classList.contains('on') ? 'SI' : 'NO';
+  }
+  function val(id) {
+    const el = document.getElementById(id);
+    return el.value ? el.value.trim() : '';
+  }
+
+  function buildPayload() {
+    return {
+      token: TOKEN,
+      nome: val('f-nome'),
+      cognome: val('f-cognome'),
+      data_nascita: val('f-data-nascita'),
+      luogo_nascita: val('f-luogo-nascita'),
+      indirizzo: val('f-indirizzo'),
+      comune: val('f-comune'),
+      cellulare: val('f-cellulare'),
+      email: val('f-email'),
+      nazionalita: val('f-nazionalita'),
+      gravidanza_allattamento: toggleOn('gravidanza_allattamento'),
+      anticoagulanti: toggleOn('anticoagulanti'),
+      allergie: toggleOn('allergie'),
+      allergie_dettaglio: val('f-allergie-dettaglio'),
+      diabete: toggleOn('diabete'),
+      cheloidi: toggleOn('cheloidi'),
+      epilessia: toggleOn('epilessia'),
+      patologie_cardiache: toggleOn('patologie_cardiache'),
+      patologie_dermatologiche: toggleOn('patologie_dermatologiche'),
+      farmaci_in_uso: val('f-farmaci'),
+      altro: val('f-altro'),
+      consenso_trattamento_dati: document.getElementById('f-consenso-base').checked ? 'SI' : 'NO',
+      comunicazioni_commerciali: toggleOn('comunicazioni_commerciali'),
+      immagini_solo_opera: toggleOn('immagini_solo_opera'),
+      immagini_corpo_visibile: toggleOn('immagini_corpo_visibile'),
+      immagini_completa: toggleOn('immagini_completa'),
+      is_returning: isReturning ? 'SI' : 'NO',
+      firma_base64: (typeof getSignatureBase64 === 'function') ? getSignatureBase64() : ''
+    };
+  }
+
+  async function submitAndClose() {
+    if (!validateStep3()) return;
+
+    const btn = document.getElementById('btn-concludi');
+    const errEl = document.getElementById('submit-error');
+    errEl.classList.remove('visible');
+    btn.disabled = true;
+    btn.textContent = 'Invio in corso...';
+
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(buildPayload())
+      });
+      const data = await res.json();
+      if (data.ok) {
+        goToClosing();
+        return;
+      }
+      errEl.textContent = data.error === 'Campi obbligatori mancanti'
+        ? 'Mancano dati richiesti (' + (data.campi || []).join(', ') + ').'
+        : (data.error || 'Errore durante l\'invio. Riprova.');
+      errEl.classList.add('visible');
+    } catch (err) {
+      errEl.textContent = 'Errore di rete. Verifica la connessione e riprova.';
+      errEl.classList.add('visible');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Concludi';
+  }
+</script>
+</body>
+</html>
