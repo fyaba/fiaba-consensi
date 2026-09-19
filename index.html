@@ -27,6 +27,10 @@
   --r:3px;
 }
 *{box-sizing:border-box}
+/* Il doppio tap non deve zoomare: questo e' un modulo, non una mappa.
+   `manipulation` toglie il doppio tap e lascia il pinch, che serve a chi
+   ci vede poco. */
+html{touch-action:manipulation}
 html,body{margin:0;padding:0}
 body{
   background:var(--ink); color:var(--ivory);
@@ -34,11 +38,9 @@ body{
   -webkit-font-smoothing:antialiased;
   min-height:100dvh; overflow-x:hidden;
 }
-/* Con la tastiera aperta il piede smette di essere ancorato: altrimenti
-   sale sopra il campo che si sta compilando e schiaccia il contenuto. */
-body.tastiera .wrap{height:auto;min-height:100dvh}
-body.tastiera .corpo{overflow:visible}
-body.tastiera .piede{position:static}
+/* Niente e' ancorato e niente scorre dentro un riquadro: la pagina scorre
+   come un documento. La tastiera che si apre non ha piu' nulla da schiacciare
+   -- era la radice dei sei campi invisibili e del titolo che spariva. */
 /* materia: grana + vignettatura, due strati */
 .grain{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.42;mix-blend-mode:overlay}
 .hatch{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.055}
@@ -47,9 +49,24 @@ body.tastiera .piede{position:static}
 .wrap{position:relative;z-index:3;max-width:520px;margin:0 auto;min-height:100dvh;
   padding:calc(env(safe-area-inset-top) + var(--s4)) var(--s4) calc(env(safe-area-inset-bottom) + var(--s4));
   display:flex;flex-direction:column}
-.corpo{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.piede{flex-shrink:0;padding-top:var(--s3)}
-.testa{flex-shrink:0}
+.corpo{flex:1 0 auto}
+.piede{flex-shrink:0;padding-top:var(--s4)}
+/* La testa resta agganciata in cima: il passo e il titolo devono restare
+   leggibili anche con la tastiera aperta e la pagina scorsa a meta'. */
+.testa{flex-shrink:0;position:sticky;top:0;z-index:6;background:var(--ink);
+  margin:calc(-1 * (env(safe-area-inset-top) + var(--s4))) calc(-1 * var(--s4)) var(--s4);
+  padding:calc(env(safe-area-inset-top) + var(--s4)) var(--s4) var(--s2)}
+.testa::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:var(--line);opacity:0;transition:opacity .22s}
+.testa.staccata::after{opacity:1}
+.testa .tacche{margin-bottom:0}
+/* Il titolo breve prende il posto di quello grande quando esce dalla vista.
+   La riga e' sempre riservata: il cambio non sposta niente. */
+.titolo-compatto{font-family:var(--serif);font-size:18px;font-weight:500;
+  text-align:center;color:var(--ivory);height:26px;line-height:26px;
+  margin-top:var(--s1);opacity:0;transform:translateY(3px);
+  transition:opacity .22s,transform .22s}
+.testa.staccata .titolo-compatto{opacity:1;transform:none}
 
 /* — tipografia — */
 h1,h2,.serif{font-family:var(--serif);font-weight:500;letter-spacing:-.015em;line-height:1.08;margin:0}
@@ -100,13 +117,42 @@ label{display:block;font-size:13.5px;letter-spacing:.08em;text-transform:upperca
 .input:focus{outline:none;border-bottom-color:var(--siena)}
 .input::placeholder{color:var(--ivory-mute)}
 .input.err{border-bottom-color:var(--error)}
+/* Safari iOS dipinge di chiaro i campi riempiti dall'autofill: sul nero del
+   modulo diventano quattro rettangoli bianchi. L'ombra interna e' l'unico
+   modo che WebKit rispetta per coprirli. */
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus,
+.input:-webkit-autofill:active{
+  -webkit-text-fill-color:var(--ivory);
+  -webkit-box-shadow:0 0 0 1000px var(--ink) inset;
+  box-shadow:0 0 0 1000px var(--ink) inset;
+  caret-color:var(--ivory);
+  transition:background-color 99999s ease-out 0s
+}
+/* su iOS il valore di una data nasce centrato: va allineato al resto */
+input[type=date]{text-align:left;min-height:48px}
+input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
+/* un menu non ancora scelto non deve sembrare compilato */
+.input.nonscelto{color:var(--ivory-mute)}
+/* Una data vuota non mostra nulla su iOS, e su Chromium mostra un suo
+   gg/mm/aaaa: si spegne quello nativo e si usa sempre il nostro, cosi' il
+   campo dice la stessa cosa sui due browser. Quando il campo ha il fuoco
+   torna l'editor nativo, che serve a chi digita da tastiera. */
+.campo{position:relative}
+.suggerimento{position:absolute;left:2px;bottom:13px;font-size:17px;
+  line-height:1.55;color:var(--ivory-mute);pointer-events:none;transition:opacity .15s}
+.suggerimento.via,input[type=date]:focus~.suggerimento{opacity:0}
+input[type=date]:not(.pieno):not(:focus)::-webkit-datetime-edit{opacity:0}
 
 /* — bottoni — */
 .btn{
   display:block;width:100%;padding:17px 20px;margin-bottom:var(--s2);
   font-family:var(--sans);font-size:16.5px;font-weight:500;letter-spacing:.02em;
   border-radius:var(--r);cursor:pointer;transition:all .2s;
-  background:transparent;color:var(--ivory);border:1.5px solid var(--line-strong)
+  background:transparent;color:var(--ivory);border:1.5px solid var(--line-strong);
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none
 }
 .btn:hover{border-color:var(--ivory)}
 .btn-primario{
@@ -121,7 +167,7 @@ label{display:block;font-size:13.5px;letter-spacing:.08em;text-transform:upperca
 
 /* — schermate — */
 .schermo{display:none}
-.schermo.attivo{display:flex;flex-direction:column;height:100%;animation:entra .5s cubic-bezier(.22,.9,.3,1) both}
+.schermo.attivo{display:flex;flex-direction:column;flex:1;animation:entra .5s cubic-bezier(.22,.9,.3,1) both}
 @keyframes entra{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
 /* — interruttori salute — */
@@ -137,7 +183,7 @@ label{display:block;font-size:13.5px;letter-spacing:.08em;text-transform:upperca
 
 .conta{text-align:center;font-size:13px;letter-spacing:.16em;color:var(--ivory-mute);
   text-transform:uppercase;margin-bottom:var(--s4)}
-.carta-zona{display:flex;align-items:center;justify-content:center;overflow:hidden}
+.carta-zona{display:flex;align-items:center;justify-content:center;min-height:44vh}
 .carta{width:100%;text-align:center}
 .carta h2{font-size:clamp(26px,7.4vw,34px);line-height:1.14}
 .carta-nota{margin-top:var(--s3);color:var(--ivory-mute);font-size:16px;min-height:1.6em}
@@ -150,6 +196,9 @@ label{display:block;font-size:13.5px;letter-spacing:.08em;text-transform:upperca
 .btn-si{border-color:var(--siena);color:var(--siena)}
 .btn-si:hover{background:var(--siena);color:#120C08}
 .btn-no:hover{border-color:var(--ivory)}
+/* Chi torna su una carta gia' risposta deve vedere cosa aveva risposto. */
+.btn-si.scelto{background:var(--siena);color:#120C08}
+.btn-no.scelto{border-color:var(--ivory);color:var(--ivory);background:rgba(253,245,230,.08)}
 /* — firma: la lastra — */
 .firma-box{
   border:1.5px solid var(--line-strong);border-radius:var(--r);height:172px;
@@ -190,8 +239,30 @@ label{display:block;font-size:13.5px;letter-spacing:.08em;text-transform:upperca
 .riga-check label{font-size:16px;line-height:1.5;text-transform:none;letter-spacing:0;
   color:var(--ivory-soft);margin:0}
 a{color:var(--siena);text-underline-offset:3px}
-.errore{display:none;color:var(--error);font-size:15px;margin:0 0 var(--s3)}
+.errore{display:none;color:var(--error);font-size:15px;line-height:1.5;
+  margin:0 0 var(--s3);font-family:var(--sans);text-align:left}
 .errore.visibile{display:block}
+/* Un errore si preme: porta al punto giusto e non fa rifare il percorso. */
+button.errore{width:100%;border:1.5px solid rgba(217,112,94,.5);border-radius:var(--r);
+  background:rgba(217,112,94,.09);padding:var(--s2) var(--s3);cursor:pointer;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button.errore .vai{display:block;margin-top:6px;font-weight:600;
+  text-decoration:underline;text-underline-offset:3px}
+button.errore[data-bersaglio=""]{cursor:default}
+@keyframes richiama{
+  0%,100%{box-shadow:0 0 0 0 rgba(217,112,94,0)}
+  28%{box-shadow:0 0 0 5px rgba(217,112,94,.32)}
+}
+.evidenzia{animation:richiama 1.15s ease-out 2;border-radius:var(--r)}
+/* marca di obbligo/facolta' sui due consensi: erano indistinguibili */
+.tag-obbl,.tag-facolt{display:inline-block;font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;border-radius:2px;padding:1px 6px;margin-left:2px;
+  white-space:nowrap;vertical-align:1px}
+.tag-obbl{color:var(--siena);border:1px solid rgba(194,102,58,.55)}
+.tag-facolt{color:var(--ivory-mute);border:1px solid var(--line-strong)}
+.esito-foto{font-size:14.5px;line-height:1.45;color:var(--ivory-mute);
+  margin:0 0 var(--s3) 41px}
+.esito-foto strong{color:var(--ivory-soft);font-weight:600}
 
 .avviso{border:1.5px solid var(--siena);border-radius:var(--r);
   background:linear-gradient(180deg,rgba(194,102,58,.13),rgba(194,102,58,.05));
@@ -204,6 +275,8 @@ a{color:var(--siena);text-underline-offset:3px}
   margin-bottom:5px;font-weight:500}
 .avviso li::before{content:"";position:absolute;left:-15px;top:.62em;
   width:6px;height:6px;border-radius:50%;background:var(--siena)}
+.avviso li.neutra{color:var(--ivory-soft);font-weight:400}
+.avviso li.neutra::before{background:var(--ivory-mute)}
 .avviso-nota{font-size:14px;color:var(--ivory-mute);margin:var(--s2) 0 0;line-height:1.45}
 /* — modale — */
 .velo{display:none;position:fixed;inset:0;background:rgba(5,4,3,.85);z-index:20;
@@ -497,16 +570,19 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
 
 <!-- 1 · ANAGRAFICA -->
 <section id="s-1" class="schermo">
-  <div class="testa"><div class="tacche"><div class="tacca on"></div><div class="tacca"></div><div class="tacca"></div></div></div>
+  <div class="testa">
+    <div class="tacche"><div class="tacca on"></div><div class="tacca"></div><div class="tacca"></div></div>
+    <div class="titolo-compatto">Chi sei.</div>
+  </div>
   <div class="corpo">
   <h2>Chi sei.</h2>
   <p class="lead" style="margin:var(--s3) 0 var(--s6)" id="sub-1">Il nome che entra nell'archivio, e resta.</p>
-  <p class="errore" id="err-1">Compila i campi segnati prima di proseguire.</p>
+  <button type="button" class="errore" id="err-1" onclick="vaiAllErrore('err-1')"></button>
 
   <div class="campo"><label for="f-nome">Nome</label><input class="input" type="text" id="f-nome" autocomplete="given-name"></div>
   <div class="campo"><label for="f-cognome">Cognome</label><input class="input" type="text" id="f-cognome" autocomplete="family-name"></div>
   <div id="campi-pieni">
-    <div class="campo"><label for="f-nascita">Data di nascita</label><input class="input" type="date" id="f-nascita" autocomplete="bday"></div>
+    <div class="campo"><label for="f-nascita">Data di nascita</label><input class="input" type="date" id="f-nascita" autocomplete="bday" min="1900-01-01"><span class="suggerimento" id="hint-nascita">gg / mm / aaaa</span></div>
     <div class="campo"><label for="f-luogo">Luogo di nascita</label><input class="input" type="text" id="f-luogo"></div>
     <div class="campo"><label for="f-indirizzo">Indirizzo</label><input class="input" type="text" id="f-indirizzo" autocomplete="street-address"></div>
     <div class="campo"><label for="f-comune">Comune</label><input class="input" type="text" id="f-comune" autocomplete="address-level2"></div>
@@ -548,8 +624,8 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
   </div>
   <div class="piede">
     <div class="scelte">
-      <button class="btn btn-no" onclick="rispondi(false)">No</button>
-      <button class="btn btn-si" onclick="rispondi(true)">Sì</button>
+      <button class="btn btn-no" id="btn-no" onclick="rispondi(false)">No</button>
+      <button class="btn btn-si" id="btn-si" onclick="rispondi(true)">Sì</button>
     </div>
     <button class="btn-ghost" onclick="indietroCarta()">Torna indietro</button>
   </div>
@@ -557,7 +633,10 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
 
 <!-- 3 · PATTO -->
 <section id="s-3" class="schermo">
-  <div class="testa"><div class="tacche"><div class="tacca on"></div><div class="tacca on"></div><div class="tacca on"></div></div></div>
+  <div class="testa">
+    <div class="tacche"><div class="tacca on"></div><div class="tacca on"></div><div class="tacca on"></div></div>
+    <div class="titolo-compatto">Il patto.</div>
+  </div>
   <div class="corpo">
   <h2>Il patto.</h2>
   <p class="lead" style="margin:var(--s3) 0 var(--s4)">Un segno che resta merita un accordo chiaro.</p>
@@ -570,17 +649,16 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
     <ul id="avviso-lista"></ul>
     <p class="avviso-nota">Se qualcosa qui è sbagliato, torna indietro e correggilo.</p>
   </div>
-  <p class="errore" id="err-3">Serve il consenso e la firma per chiudere.</p>
-
   <div class="patto" style="border:0;margin:0;padding:0">
-    <div class="riga-check">
-      <input type="checkbox" id="c-dati">
-      <label for="c-dati">Acconsento al trattamento dei miei dati personali e sanitari per le finalità descritte. <a href="#" onclick="apriInformativa();return false">Leggi l'informativa</a></label>
+    <div class="riga-check" id="riga-dati">
+      <input type="checkbox" id="c-dati" onchange="scordaErroreInvio()">
+      <label for="c-dati">Acconsento al trattamento dei miei dati personali e sanitari per le finalità descritte. <span class="tag-obbl">necessario</span> <a href="#" onclick="apriInformativa();return false">Leggi l'informativa</a></label>
     </div>
-    <div class="riga-check">
-      <input type="checkbox" id="c-foto">
-      <label for="c-foto">Acconsento alle fotografie del lavoro e al loro uso nel portfolio dell'atelier. <span style="color:var(--ivory-mute)">(facoltativo)</span></label>
+    <div class="riga-check" id="riga-foto">
+      <input type="checkbox" id="c-foto" onchange="aggiornaEsitoFoto()">
+      <label for="c-foto">Acconsento alle fotografie del lavoro e al loro uso nel portfolio dell'atelier. <span class="tag-facolt">facoltativo</span></label>
     </div>
+    <p class="esito-foto" id="esito-foto"></p>
   </div>
 
   <p style="text-align:center;font-family:var(--serif);font-size:19px;line-height:1.4;margin:var(--s8) 0 var(--s4);color:var(--ivory)">La tua firma chiude il patto<br>e apre il lavoro.</p>
@@ -600,9 +678,9 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
 
   </div>
   <div class="piede">
-    <p class="errore" id="err-invio" style="text-align:center"></p>
+    <button type="button" class="errore" id="err-invio" onclick="vaiAllErrore('err-invio')"></button>
     <button class="btn btn-primario" id="btn-sigilla" onclick="sigilla()">Firma e sigilla</button>
-    <button class="btn-ghost" onclick="vai(2)">Torna indietro</button>
+    <button class="btn-ghost" onclick="tornaAlleCarte()">Torna indietro</button>
   </div>
 </section>
 
@@ -652,8 +730,6 @@ const CONDIZIONI=[
  ["patologie_cardiache","Patologie<br>cardiache?",""],
  ["patologie_dermatologiche","Patologie<br>della pelle?","Psoriasi, eczema, dermatiti in corso."]
 ];
-let idx=0;
-let daCorreggere=0;
 const ETICHETTE={
  gravidanza_allattamento:"Gravidanza o allattamento",
  anticoagulanti:"Assume anticoagulanti",
@@ -664,105 +740,7 @@ const ETICHETTE={
  patologie_cardiache:"Patologie cardiache",
  patologie_dermatologiche:"Patologie della pelle"
 };
-const stato={};
-let tornante=false, pad=null;
 
-function montaFarmaci(){
-  stato.farmaci=''; stato.altro='';
-}
-function mostraCarta(n,verso){
-  idx=n;
-  const [k,dom,nota]=CONDIZIONI[n];
-  const c=document.getElementById('carta');
-  c.classList.remove('entra','esce'); void c.offsetWidth;
-  document.getElementById('carta-dom').innerHTML=dom;
-  document.getElementById('carta-nota').textContent=nota||'';
-  document.getElementById('conta-2').textContent=(n+1)+' di '+CONDIZIONI.length;
-  document.getElementById('campo-allergie').style.display='none';
-  document.getElementById('err-2').classList.remove('visibile');
-  c.classList.add('entra');
-}
-function rispondi(si){
-  const [k]=CONDIZIONI[idx];
-  stato[k]=si;
-  if(k==='allergie' && si){
-    const campo=document.getElementById('campo-allergie');
-    if(campo.style.display==='none'){
-      campo.style.display='block';
-      setTimeout(()=>document.getElementById('f-allergie').focus(),60);
-      return;
-    }
-    if(!v('f-allergie')){
-      document.getElementById('err-2').classList.add('visibile');
-      return;
-    }
-  }
-  const c=document.getElementById('carta');
-  c.classList.add('esce');
-  setTimeout(()=>{
-    if(idx<CONDIZIONI.length-1) mostraCarta(idx+1);
-    else vai(3);
-  },190);
-}
-function indietroCarta(){
-  if(idx>0) mostraCarta(idx-1);
-  else vai(1);
-}
-
-function v(id){const e=document.getElementById(id);return e?e.value.trim():''}
-function mostra(id){
-  document.querySelectorAll('.schermo').forEach(s=>s.classList.remove('attivo'));
-  document.getElementById(id).classList.add('attivo');
-  window.scrollTo(0,0);
-}
-function avvia(returning){
-  tornante=returning;
-  document.getElementById('campi-pieni').style.display=returning?'none':'block';
-  document.getElementById('campo-nazionalita').style.display=returning?'none':'block';
-  document.getElementById('sub-1').textContent=returning
-    ? 'Bastano nome e contatto: il resto è già nell\'archivio.'
-    : 'Il nome che entra nell\'archivio, e resta.';
-  mostra('s-1');
-}
-function vai(n){
-  if(n===0) return mostra('s-intro');
-  if(n===2){
-    if(!validaUno()) return;
-    if(daCorreggere){ daCorreggere=0; return vai(3); }   // rientro da un campo mancante
-    mostra('s-2'); return mostraCarta(0);
-  }
-  if(n===3){ mostra('s-3'); componiAvviso(); return setTimeout(montaFirma,90); }
-  if(n===1) return mostra('s-1');
-}
-function segnaErrore(ids,elErr,testo){
-  let ko=false;
-  ids.forEach(id=>{
-    const e=document.getElementById(id);
-    if(!e) return;
-    const vuoto=!e.value.trim();
-    e.classList.toggle('err',vuoto);
-    if(vuoto) ko=true;
-  });
-  const err=document.getElementById(elErr);
-  err.textContent=testo; err.classList.toggle('visibile',ko);
-  return !ko;
-}
-function validaUno(){
-  const ids=tornante
-    ? ['f-nome','f-cognome','f-cell']
-    : ['f-nome','f-cognome','f-nascita','f-luogo','f-indirizzo','f-comune','f-mail','f-cell','f-nazionalita'];
-  return segnaErrore(ids,'err-1','Compila i campi segnati prima di proseguire.');
-}
-function validaDue(){
-  if(stato.allergie && !v('f-allergie')){
-    const e=document.getElementById('err-2');
-    e.textContent='Specifica quali allergie prima di proseguire.'; e.classList.add('visibile');
-    document.getElementById('f-allergie').classList.add('err');
-    return false;
-  }
-  document.getElementById('err-2').classList.remove('visibile');
-  return true;
-}
 // Mappa campo del backend -> campo nel form, con etichetta leggibile.
 const CAMPI_FORM={
   nome:['f-nome','Nome'], cognome:['f-cognome','Cognome'],
@@ -772,74 +750,341 @@ const CAMPI_FORM={
   nazionalita:['f-nazionalita','Nazionalita']
 };
 
-/* Un campo mancante non deve costare tutto il percorso: si torna allo step 1,
-   si evidenzia cio' che manca e si porta il cursore sul primo. Il resto e'
-   gia' compilato e resta dov'e'. */
+let idx=0;               // carta salute corrente
+let daCorreggere=0;      // rientro da un campo mancante: si torna alla firma
+let tornante=false;      // "sono gia' stato inciso qui"
+let pad=null;
+let firmaDati=null;      // le pennellate, al sicuro da ogni resize
+let inTransizione=false; // assorbe i tap rapidi durante l'uscita di una carta
+const stato={};
+const risposte=new Set();
+
+/* ---------------------------------------------------- utilita' */
+function el(id){return document.getElementById(id)}
+function v(id){const e=el(id);return e?e.value.trim():''}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+function altezzaVista(){
+  return (window.visualViewport&&window.visualViewport.height)||window.innerHeight;
+}
+/* Sotto la testa agganciata non si vede niente: quella fascia non conta. */
+function inVista(e){
+  if(!e) return false;
+  const r=e.getBoundingClientRect();
+  const t=document.querySelector('.schermo.attivo .testa');
+  const cima=t?t.getBoundingClientRect().bottom:0;
+  return r.top>=cima-2 && r.bottom<=altezzaVista()+2;
+}
+function richiama(e){
+  if(!e) return;
+  e.classList.add('evidenzia');
+  setTimeout(()=>e.classList.remove('evidenzia'),2500);
+}
+
+/* ------------------------------------- titolo breve nella testa */
+/* Quando il titolo grande esce dalla vista -- scorrendo, o perche' la
+   tastiera ha ristretto lo schermo -- la testa mostra la sua versione
+   breve. L'altezza della riga e' sempre riservata: niente salti. */
+function aggiornaTeste(){
+  const t=document.querySelector('.schermo.attivo .testa');
+  if(!t) return;
+  const h=t.parentElement.querySelector('.corpo h2');
+  if(!h) return;
+  t.classList.toggle('staccata',h.getBoundingClientRect().bottom<t.getBoundingClientRect().bottom+4);
+}
+
+/* ---------------------------------------------------- schermate */
+function mostra(id){
+  document.querySelectorAll('.schermo').forEach(s=>s.classList.remove('attivo'));
+  el(id).classList.add('attivo');
+  window.scrollTo(0,0);
+  aggiornaTeste();
+}
+function avvia(returning){
+  tornante=returning;
+  daCorreggere=0;
+  el('campi-pieni').style.display=returning?'none':'block';
+  el('campo-nazionalita').style.display=returning?'none':'block';
+  el('sub-1').textContent=returning
+    ? 'Bastano nome e contatto: il resto è già nell\'archivio.'
+    : 'Il nome che entra nell\'archivio, e resta.';
+  el('err-1').classList.remove('visibile');
+  mostra('s-1');
+}
+function vai(n){
+  if(n===0){ daCorreggere=0; return mostra('s-intro'); }
+  if(n===1) return mostra('s-1');
+  if(n===2){
+    if(!validaUno()) return;
+    if(daCorreggere){ daCorreggere=0; return vai(3); }   // rientro da un campo mancante
+    mostra('s-2'); return mostraCarta(0);
+  }
+  if(n===3){
+    mostra('s-3');
+    aggiornaEsitoFoto();          // compone anche l'avviso
+    return setTimeout(dimensionaFirma,90);
+  }
+}
+/* Dal patto si torna all'ultima carta, non alla prima: tornare indietro
+   non deve costare otto risposte gia' date. */
+function tornaAlleCarte(){
+  mostra('s-2');
+  mostraCarta(CONDIZIONI.length-1);
+}
+
+/* ------------------------------------------------ carte salute */
+function mostraCarta(n){
+  idx=n;
+  const [k,dom,nota]=CONDIZIONI[n];
+  const c=el('carta');
+  c.classList.remove('entra','esce'); void c.offsetWidth;
+  el('carta-dom').innerHTML=dom;
+  el('carta-nota').textContent=nota||'';
+  el('conta-2').textContent=(n+1)+' di '+CONDIZIONI.length;
+  el('campo-allergie').style.display=(k==='allergie'&&stato.allergie)?'block':'none';
+  el('err-2').classList.remove('visibile');
+  // chi torna su una carta gia' risposta vede cosa aveva risposto
+  const data=risposte.has(k);
+  el('btn-si').classList.toggle('scelto',data&&stato[k]===true);
+  el('btn-no').classList.toggle('scelto',data&&stato[k]===false);
+  c.classList.add('entra');
+  inTransizione=false;
+}
+function rispondi(si){
+  if(inTransizione) return;                 // il tap arrivato durante l'uscita non conta
+  const [k]=CONDIZIONI[idx];
+  if(k==='allergie'&&si){
+    const campo=el('campo-allergie');
+    if(campo.style.display==='none'){
+      stato[k]=true; risposte.add(k);
+      campo.style.display='block';
+      el('btn-si').classList.add('scelto'); el('btn-no').classList.remove('scelto');
+      setTimeout(()=>el('f-allergie').focus(),60);
+      return;
+    }
+    if(!v('f-allergie')){
+      el('err-2').classList.add('visibile');
+      el('f-allergie').classList.add('err');
+      el('f-allergie').focus();
+      return;
+    }
+  }
+  stato[k]=si; risposte.add(k);
+  if(k==='allergie'&&!si){ el('f-allergie').value=''; el('campo-allergie').style.display='none'; }
+  inTransizione=true;
+  const c=el('carta');
+  c.classList.add('esce');
+  setTimeout(()=>{
+    if(idx<CONDIZIONI.length-1) mostraCarta(idx+1);
+    else { inTransizione=false; vai(3); }
+  },190);
+}
+function indietroCarta(){
+  if(inTransizione) return;
+  if(idx>0) mostraCarta(idx-1); else vai(1);
+}
+
+/* ------------------------------------------------- validazione */
+/* Un campo si accende di rosso solo dopo che l'utente ha provato a
+   proseguire, mai prima -- e quando si accende, il primo campo mancante
+   viene raggiunto, non lasciato sotto la piega dello schermo. */
+function segnaErrore(ids,idErr,testo){
+  const mancanti=ids.filter(id=>{const e=el(id);return e&&!e.value.trim()});
+  const err=el(idErr);
+  if(!mancanti.length){
+    ids.forEach(id=>{const e=el(id); if(e){e.classList.remove('err');e.setAttribute('aria-invalid','false')}});
+    err.classList.remove('visibile'); err.dataset.bersaglio=''; return true;
+  }
+  /* Modulo ancora intonso: nessun campo si accende. Il rosso dice "questo
+     l'hai saltato", e chi non ha ancora scritto non ha saltato niente --
+     era la ragione per cui la schermata sembrava gia' sbagliata in partenza. */
+  const intonso=mancanti.length===ids.length;
+  ids.forEach(id=>{
+    const e=el(id); if(!e) return;
+    const ko=!intonso&&mancanti.indexOf(id)>=0;
+    e.classList.toggle('err',ko);
+    e.setAttribute('aria-invalid',ko?'true':'false');
+  });
+  err.innerHTML=intonso
+    ? 'Per proseguire servono questi dati.<span class="vai">Cominciamo dal nome &rarr;</span>'
+    : esc(testo)+'<span class="vai">Portami al primo campo che manca &rarr;</span>';
+  err.dataset.bersaglio=mancanti[0];
+  err.classList.add('visibile');
+  portaA(mancanti[0]);
+  return false;
+}
+function validaUno(){
+  const ids=tornante
+    ? ['f-nome','f-cognome','f-cell']
+    : ['f-nome','f-cognome','f-nascita','f-luogo','f-indirizzo','f-comune','f-mail','f-cell','f-nazionalita'];
+  if(!segnaErrore(ids,'err-1','Compila i campi segnati prima di proseguire.')) return false;
+  if(!tornante&&!dataPlausibile()){
+    const e=el('f-nascita');
+    e.classList.add('err'); e.setAttribute('aria-invalid','true');
+    const err=el('err-1');
+    err.innerHTML='Controlla la <strong>data di nascita</strong>: deve essere una data già passata.'+
+      '<span class="vai">Portami al campo &rarr;</span>';
+    err.dataset.bersaglio='f-nascita';
+    err.classList.add('visibile');
+    portaA('f-nascita');
+    return false;
+  }
+  return true;
+}
+
+/* Il selettore data di iOS si apre su oggi: chi lo chiude senza scegliere si
+   ritrova oggi come data di nascita, e passa senza che nessuno se ne accorga
+   -- e' successo alla prima prova vera sul telefono, 19 set 2026. Il campo
+   non arriva oltre ieri, e comunque si controlla prima di proseguire. */
+function preparaData(){
+  const e=el('f-nascita'); if(!e) return;
+  const i=new Date(Date.now()-86400000);
+  e.max=i.getFullYear()+'-'+String(i.getMonth()+1).padStart(2,'0')+'-'+String(i.getDate()).padStart(2,'0');
+}
+function dataPlausibile(){
+  const t=v('f-nascita'); if(!t) return false;
+  const n=new Date(t+'T00:00:00'); if(isNaN(n.getTime())) return false;
+  const oggi=new Date(); oggi.setHours(0,0,0,0);
+  if(n>=oggi) return false;
+  return (oggi-n)/31557600000<=120;
+}
+/* Un campo data vuoto e un menu non scelto somigliano troppo a un campo
+   compilato: qui si distinguono. */
+function aggiornaAspettoCampi(){
+  const d=el('f-nascita'), s=el('f-nazionalita'), h=el('hint-nascita');
+  if(d){ d.classList.toggle('pieno',!!d.value); if(h) h.classList.toggle('via',!!d.value); }
+  if(s) s.classList.toggle('nonscelto',!s.value);
+}
+
+/* ------------------------------- portare l'utente dove serve */
+function portaA(id){
+  const e=el(id); if(!e) return;
+  const box=e.closest('.campo')||e;
+  if(!inVista(box)) box.scrollIntoView({block:'center',behavior:'smooth'});
+  richiama(box);
+  setTimeout(()=>{ try{e.focus({preventScroll:true})}catch(_){ e.focus() } },320);
+}
+function portaAllaFirma(){
+  const b=el('firma-box');
+  if(!inVista(b)) b.scrollIntoView({block:'center',behavior:'smooth'});
+  richiama(b);
+}
+function portaAlConsenso(){
+  const r=el('riga-dati');
+  if(!inVista(r)) r.scrollIntoView({block:'center',behavior:'smooth'});
+  richiama(r);
+  setTimeout(()=>{try{el('c-dati').focus({preventScroll:true})}catch(_){}},320);
+}
+function vaiAllErrore(idErr){
+  const b=el(idErr).dataset.bersaglio;
+  if(!b) return;
+  if(b==='firma') return portaAllaFirma();
+  if(b==='consenso') return portaAlConsenso();
+  portaA(b);
+}
+
+/* Il backend ha rifiutato per campi mancanti: si torna allo step 1, si
+   evidenzia cio' che manca, e il Continua riporta dritti alla firma. Il
+   resto -- risposte, consensi, firma -- resta dov'e'. */
 function portaAiCampiMancanti(campi){
   const noti=campi.filter(c=>CAMPI_FORM[c]);
+  const ignoti=campi.filter(c=>!CAMPI_FORM[c]);
   if(!noti.length){
-    const e=document.getElementById('err-invio');
-    e.textContent='Mancano dati richiesti ('+campi.join(', ')+').';
-    e.classList.add('visibile');
+    mostraErroreInvio('Mancano dati richiesti ('+ignoti.join(', ')+'). Riprova, o passa il telefono ad Alberto.','');
     return;
   }
+  noti.forEach(c=>{
+    const e=el(CAMPI_FORM[c][0]); if(!e) return;
+    // un campo che il percorso "sono gia' stato inciso qui" tiene nascosto
+    // va mostrato: altrimenti l'errore nomina qualcosa che non c'e'
+    const blocco=e.closest('#campi-pieni,#campo-nazionalita');
+    if(blocco) blocco.style.display='block';
+    e.classList.add('err'); e.setAttribute('aria-invalid','true');
+  });
   daCorreggere=noti.length;
   mostra('s-1');
-  noti.forEach(c=>{
-    const el=document.getElementById(CAMPI_FORM[c][0]);
-    if(el) el.classList.add('err');
-  });
-  const err=document.getElementById('err-1');
-  err.innerHTML='Manca ancora: <strong>'+noti.map(c=>CAMPI_FORM[c][1]).join(', ')+
-    '</strong>. Compila e premi Continua: tornerai direttamente alla firma.';
+  const err=el('err-1');
+  err.innerHTML='Manca ancora: <strong>'+noti.map(c=>esc(CAMPI_FORM[c][1])).join(', ')+
+    '</strong>. Compila e premi Continua: tornerai dritto alla firma, senza rifare nulla.'+
+    '<span class="vai">Portami al primo &rarr;</span>';
+  err.dataset.bersaglio=CAMPI_FORM[noti[0]][0];
   err.classList.add('visibile');
-  const primo=document.getElementById(CAMPI_FORM[noti[0]][0]);
-  if(primo){ primo.scrollIntoView({block:'center',behavior:'smooth'}); setTimeout(()=>primo.focus(),320); }
+  portaA(CAMPI_FORM[noti[0]][0]);
 }
 
-/* La tastiera mobile riduce il viewport: senza questo il piede ancorato
-   sale sopra il campo attivo e il contenuto si schiaccia. */
-(function gestisciTastiera(){
-  const vv=window.visualViewport;
-  if(!vv) return;
-  const aggiorna=()=>{
-    const ridotto=(window.innerHeight-vv.height)>140;
-    document.body.classList.toggle('tastiera',ridotto);
-  };
-  vv.addEventListener('resize',aggiorna);
-  vv.addEventListener('scroll',aggiorna);
-})();
-
+/* ------------------------------------------- avviso e consensi */
 function componiAvviso(){
-  const attive=CONDIZIONI.filter(([k])=>stato[k]).map(([k])=>{
-    if(k==='allergie'){
-      const d=v('f-allergie');
-      return d ? 'Allergie: '+d : 'Allergie';
-    }
+  const voci=CONDIZIONI.filter(([k])=>stato[k]).map(([k])=>{
+    if(k==='allergie'){ const d=v('f-allergie'); return d?'Allergie: '+esc(d):'Allergie'; }
     return ETICHETTE[k];
-  });
-  const box=document.getElementById('avviso-salute');
-  if(!attive.length){ box.style.display='none'; return; }
-  document.getElementById('avviso-lista').innerHTML=attive.map(t=>'<li>'+t+'</li>').join('');
+  }).map(t=>'<li>'+t+'</li>');
+  // il rifiuto delle foto non e' una condizione clinica, ma ad Alberto
+  // serve saperlo: sta nello stesso avviso, con un peso diverso
+  if(!el('c-foto').checked) voci.push('<li class="neutra">Fotografie: non acconsentite</li>');
+  const box=el('avviso-salute');
+  if(!voci.length){ box.style.display='none'; return; }
+  el('avviso-lista').innerHTML=voci.join('');
   box.style.display='block';
 }
-function montaFirmaSePronta(){}
-function montaFirma(){
-  const c=document.getElementById('signature-canvas');
-  if(!c) return;
+/* Il consenso foto puo' essere rifiutato: non blocca niente, ma la scelta
+   resta scritta sullo schermo e nel dato inviato. */
+function aggiornaEsitoFoto(){
+  el('esito-foto').innerHTML=el('c-foto').checked
+    ? 'Verrà registrato: <strong>fotografie acconsentite</strong>.'
+    : 'Verrà registrato: <strong>fotografie rifiutate</strong>. Non impedisce di firmare.';
+  componiAvviso();
+}
+function scordaErroreInvio(){
+  const err=el('err-invio');
+  if(err.dataset.bersaglio==='consenso'){ err.classList.remove('visibile'); err.dataset.bersaglio=''; }
+}
+
+/* ------------------------------------------------------ firma */
+/* La tastiera che si apre o si chiude e' un resize. Prima il SignaturePad
+   veniva rifatto a ogni resize: lo stato interno tornava vuoto mentre il
+   disegno restava dipinto, e il modulo diceva "manca la firma" a chi la
+   stava guardando. Ora il canvas si rimisura solo se ha davvero cambiato
+   dimensione, e le pennellate vengono salvate e ridipinte. */
+function dimensionaFirma(){
+  const c=el('signature-canvas');
+  if(!c||!c.offsetWidth) return;
   const r=Math.max(window.devicePixelRatio||1,1);
-  c.width=c.offsetWidth*r; c.height=c.offsetHeight*r;
+  const w=Math.round(c.offsetWidth*r), h=Math.round(c.offsetHeight*r);
+  if(pad&&c.width===w&&c.height===h) return;          // niente e' cambiato: non si tocca
+  const salvate=(pad&&!pad.isEmpty())?pad.toData():firmaDati;
+  c.width=w; c.height=h;
   c.getContext('2d').scale(r,r);
   if(!pad){
     pad=new SignaturePad(c,{penColor:'#FDF5E6',backgroundColor:'rgba(0,0,0,0)',minWidth:1.1,maxWidth:2.7});
-    pad.addEventListener('beginStroke',()=>document.getElementById('firma-box').classList.add('firmato'));
-  } else { pad.clear(); document.getElementById('firma-box').classList.remove('firmato'); }
+    pad.addEventListener('beginStroke',()=>{
+      el('firma-box').classList.add('firmato');
+      el('firma-box').style.borderColor='';
+      const err=el('err-invio');
+      if(err.dataset.bersaglio==='firma'){ err.classList.remove('visibile'); err.dataset.bersaglio=''; }
+    });
+    pad.addEventListener('endStroke',()=>{ firmaDati=pad.toData(); segnaFirma(); });
+  }
+  if(salvate&&salvate.length){ pad.fromData(salvate); firmaDati=salvate; }
+  segnaFirma();
 }
-function pulisciFirma(){ if(pad){pad.clear();document.getElementById('firma-box').classList.remove('firmato')} }
-function apriInformativa(){document.getElementById('velo-informativa').classList.add('visibile')}
-function chiudiInformativa(){document.getElementById('velo-informativa').classList.remove('visibile')}
+function firmaPresente(){
+  if(pad&&!pad.isEmpty()) return true;
+  return !!(firmaDati&&firmaDati.length);
+}
+function segnaFirma(){ el('firma-box').classList.toggle('firmato',firmaPresente()) }
+function pulisciFirma(){
+  firmaDati=null;
+  if(pad) pad.clear();
+  el('firma-box').classList.remove('firmato');
+  el('firma-box').style.borderColor='';
+}
 
+function apriInformativa(){el('velo-informativa').classList.add('visibile')}
+function chiudiInformativa(){el('velo-informativa').classList.remove('visibile')}
+
+/* ------------------------------------------------------ invio */
 function payload(){
+  if(firmaDati&&firmaDati.length&&pad&&pad.isEmpty()) pad.fromData(firmaDati);
   const p={
     token:TOKEN,
     nome:v('f-nome'), cognome:v('f-cognome'),
@@ -849,65 +1094,110 @@ function payload(){
     nazionalita:v('f-nazionalita'),
     allergie_dettaglio:v('f-allergie'),
     farmaci_in_uso:'', altro:'',
-    consenso_trattamento_dati:document.getElementById('c-dati').checked?'SI':'NO',
+    consenso_trattamento_dati:el('c-dati').checked?'SI':'NO',
     comunicazioni_commerciali:'NO',
-    immagini_solo_opera:document.getElementById('c-foto').checked?'SI':'NO',
+    immagini_solo_opera:el('c-foto').checked?'SI':'NO',
     immagini_corpo_visibile:'NO',
     immagini_completa:'NO',
     is_returning:tornante?'SI':'NO',
-    firma_base64:(pad&&!pad.isEmpty())?pad.toDataURL('image/png'):''
+    firma_base64:firmaPresente()?pad.toDataURL('image/png'):''
   };
   CONDIZIONI.forEach(([k])=>p[k]=stato[k]?'SI':'NO');
   return p;
 }
+function mostraErroreInvio(testo,bersaglio){
+  const err=el('err-invio');
+  const azione=bersaglio==='firma'?'Portami alla firma &rarr;'
+             :bersaglio==='consenso'?'Portami al consenso &rarr;':'';
+  err.innerHTML=esc(testo)+(azione?'<span class="vai">'+azione+'</span>':'');
+  err.dataset.bersaglio=bersaglio||'';
+  err.classList.add('visibile');
+  /* L'errore non porta via la pagina da solo: compare accanto al bottone
+     appena premuto, dove l'occhio e' gia'. Al punto giusto ci si va
+     premendolo. Se il bersaglio e' sotto gli occhi, gli si da' un lampo. */
+  const b=bersaglio==='firma'?el('firma-box'):bersaglio==='consenso'?el('riga-dati'):null;
+  if(b&&inVista(b)) richiama(b);
+}
+function braceAccesa(accesa){
+  const btn=el('btn-sigilla');
+  btn.disabled=accesa;
+  btn.style.display=accesa?'none':'block';
+  el('invio-brace').style.display=accesa?'block':'none';
+}
 
 async function sigilla(){
-  const err=document.getElementById('err-invio');
-  err.classList.remove('visibile');
-  if(!document.getElementById('c-dati').checked){
-    err.textContent='Serve il consenso al trattamento dei dati per chiudere.';
-    err.classList.add('visibile'); return;
-  }
-  if(!pad||pad.isEmpty()){
-    err.textContent='Manca la firma.';
-    err.classList.add('visibile');
-    document.getElementById('firma-box').style.borderColor='var(--error)';
+  const err=el('err-invio');
+  err.classList.remove('visibile'); err.dataset.bersaglio='';
+
+  // il consenso dati serve davvero; quello foto no, e non e' mai stato un freno
+  if(!el('c-dati').checked){
+    mostraErroreInvio('Manca il consenso al trattamento dei dati: è l\'unico obbligatorio.','consenso');
     return;
   }
-  const btn=document.getElementById('btn-sigilla');
-  btn.disabled=true; btn.style.display='none';
-  document.getElementById('invio-brace').style.display='block';
+  if(!firmaPresente()){
+    mostraErroreInvio('Manca la firma.','firma');
+    el('firma-box').style.borderColor='var(--error)';
+    return;
+  }
+
+  braceAccesa(true);
   try{
     const res=await fetch(ENDPOINT,{method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify(payload())});
     const d=await res.json();
     if(d.ok){ chiudi(); return; }
-    if(d.error==='Campi obbligatori mancanti' && (d.campi||[]).length){
+    braceAccesa(false);   // il bottone deve tornare: da qui si riprova
+    if(d.error==='Campi obbligatori mancanti'&&(d.campi||[]).length){
       portaAiCampiMancanti(d.campi);
       return;
     }
-    err.textContent=d.error||'Errore durante l\'invio. Riprova.';
+    mostraErroreInvio(d.error||'Errore durante l\'invio. Riprova.','');
   }catch(e){
-    err.textContent='Errore di rete. Controlla la connessione e riprova.';
+    braceAccesa(false);
+    mostraErroreInvio('Errore di rete. Controlla la connessione e riprova.','');
   }
-  err.classList.add('visibile');
-  document.getElementById('invio-brace').style.display='none';
-  btn.style.display='block'; btn.disabled=false;
 }
 
 function chiudi(){
   const n=v('f-nome');
-  document.getElementById('nome-fine').textContent=n?n+', ':'';
+  el('nome-fine').textContent=n?n+', ':'';
   mostra('s-fine');
-  const s=document.getElementById('sigillo');
+  const s=el('sigillo');
   s.classList.remove('impresso'); void s.offsetWidth; s.classList.add('impresso');
 }
 
+/* ------------------------------------------------------ avvio */
 CONDIZIONI.forEach(([k])=>stato[k]=false);
-montaFarmaci();
-document.addEventListener('input',e=>{ if(e.target.classList) e.target.classList.remove('err'); });
-window.addEventListener('resize',()=>{if(document.getElementById('s-3').classList.contains('attivo'))montaFirma()});
+preparaData();
+aggiornaAspettoCampi();
+document.addEventListener('input',e=>{
+  if(e.target&&e.target.classList){
+    e.target.classList.remove('err');
+    if(e.target.removeAttribute) e.target.removeAttribute('aria-invalid');
+  }
+  aggiornaAspettoCampi();
+});
+document.addEventListener('change',aggiornaAspettoCampi);
+window.addEventListener('scroll',aggiornaTeste,{passive:true});
+
+/* Un resize puo' essere la tastiera, una rotazione o la barra di Safari.
+   Si aspetta che si assesti, poi si rimisura solo cio' che serve. */
+let attesa=null;
+function suResize(){
+  aggiornaTeste();
+  clearTimeout(attesa);
+  attesa=setTimeout(()=>{
+    if(el('s-3').classList.contains('attivo')) dimensionaFirma();
+    aggiornaTeste();
+  },140);
+}
+window.addEventListener('resize',suResize);
+window.addEventListener('orientationchange',suResize);
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',suResize);
+  window.visualViewport.addEventListener('scroll',aggiornaTeste);
+}
 </script>
 </body>
 </html>
