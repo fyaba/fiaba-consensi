@@ -513,6 +513,14 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
   </div>
   <div class="campo"><label for="f-cell">Cellulare</label><input class="input" type="tel" id="f-cell" autocomplete="tel"></div>
   <div class="campo"><label for="f-mail">Email</label><input class="input" type="email" id="f-mail" autocomplete="email"></div>
+  <div class="campo" id="campo-nazionalita">
+    <label for="f-nazionalita">Nazionalita</label>
+    <select class="input" id="f-nazionalita">
+      <option value="">Scegli</option>
+      <option value="ITALIANA">Italiana</option>
+      <option value="ESTERA">Estera</option>
+    </select>
+  </div>
 
   </div>
   <div class="piede">
@@ -710,6 +718,7 @@ function mostra(id){
 function avvia(returning){
   tornante=returning;
   document.getElementById('campi-pieni').style.display=returning?'none':'block';
+  document.getElementById('campo-nazionalita').style.display=returning?'none':'block';
   document.getElementById('sub-1').textContent=returning
     ? 'Bastano nome e contatto: il resto è già nell\'archivio.'
     : 'Il nome che entra nell\'archivio, e resta.';
@@ -739,7 +748,9 @@ function segnaErrore(ids,elErr,testo){
   return !ko;
 }
 function validaUno(){
-  const ids=tornante?['f-nome','f-cognome','f-cell']:['f-nome','f-cognome','f-nascita','f-luogo','f-cell'];
+  const ids=tornante
+    ? ['f-nome','f-cognome','f-cell']
+    : ['f-nome','f-cognome','f-nascita','f-luogo','f-indirizzo','f-comune','f-mail','f-cell','f-nazionalita'];
   return segnaErrore(ids,'err-1','Compila i campi segnati prima di proseguire.');
 }
 function validaDue(){
@@ -757,7 +768,8 @@ const CAMPI_FORM={
   nome:['f-nome','Nome'], cognome:['f-cognome','Cognome'],
   data_nascita:['f-nascita','Data di nascita'], luogo_nascita:['f-luogo','Luogo di nascita'],
   indirizzo:['f-indirizzo','Indirizzo'], comune:['f-comune','Comune'],
-  cellulare:['f-cell','Cellulare'], email:['f-mail','Email']
+  cellulare:['f-cell','Cellulare'], email:['f-mail','Email'],
+  nazionalita:['f-nazionalita','Nazionalita']
 };
 
 /* Un campo mancante non deve costare tutto il percorso: si torna allo step 1,
@@ -834,7 +846,7 @@ function payload(){
     data_nascita:v('f-nascita'), luogo_nascita:v('f-luogo'),
     indirizzo:v('f-indirizzo'), comune:v('f-comune'),
     cellulare:v('f-cell'), email:v('f-mail'),
-    nazionalita:'',
+    nazionalita:v('f-nazionalita'),
     allergie_dettaglio:v('f-allergie'),
     farmaci_in_uso:'', altro:'',
     consenso_trattamento_dati:document.getElementById('c-dati').checked?'SI':'NO',
