@@ -32,14 +32,19 @@ body{
   background:var(--ink); color:var(--ivory);
   font-family:var(--sans); font-size:17px; line-height:1.55;
   -webkit-font-smoothing:antialiased;
-  height:100dvh; overflow:hidden;
+  min-height:100dvh; overflow-x:hidden;
 }
+/* Con la tastiera aperta il piede smette di essere ancorato: altrimenti
+   sale sopra il campo che si sta compilando e schiaccia il contenuto. */
+body.tastiera .wrap{height:auto;min-height:100dvh}
+body.tastiera .corpo{overflow:visible}
+body.tastiera .piede{position:static}
 /* materia: grana + vignettatura, due strati */
 .grain{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.42;mix-blend-mode:overlay}
 .hatch{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.055}
 .vignette{position:fixed;inset:0;pointer-events:none;z-index:1;
   background:radial-gradient(120% 85% at 50% 22%,transparent 38%,rgba(0,0,0,.62) 100%)}
-.wrap{position:relative;z-index:3;max-width:520px;margin:0 auto;height:100dvh;
+.wrap{position:relative;z-index:3;max-width:520px;margin:0 auto;min-height:100dvh;
   padding:calc(env(safe-area-inset-top) + var(--s4)) var(--s4) calc(env(safe-area-inset-bottom) + var(--s4));
   display:flex;flex-direction:column}
 .corpo{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -640,6 +645,7 @@ const CONDIZIONI=[
  ["patologie_dermatologiche","Patologie<br>della pelle?","Psoriasi, eczema, dermatiti in corso."]
 ];
 let idx=0;
+let daCorreggere=0;
 const ETICHETTE={
  gravidanza_allattamento:"Gravidanza o allattamento",
  anticoagulanti:"Assume anticoagulanti",
@@ -711,7 +717,11 @@ function avvia(returning){
 }
 function vai(n){
   if(n===0) return mostra('s-intro');
-  if(n===2){ if(!validaUno()) return; mostra('s-2'); return mostraCarta(0); }
+  if(n===2){
+    if(!validaUno()) return;
+    if(daCorreggere){ daCorreggere=0; return vai(3); }   // rientro da un campo mancante
+    mostra('s-2'); return mostraCarta(0);
+  }
   if(n===3){ mostra('s-3'); componiAvviso(); return setTimeout(montaFirma,90); }
   if(n===1) return mostra('s-1');
 }
@@ -742,6 +752,52 @@ function validaDue(){
   document.getElementById('err-2').classList.remove('visibile');
   return true;
 }
+// Mappa campo del backend -> campo nel form, con etichetta leggibile.
+const CAMPI_FORM={
+  nome:['f-nome','Nome'], cognome:['f-cognome','Cognome'],
+  data_nascita:['f-nascita','Data di nascita'], luogo_nascita:['f-luogo','Luogo di nascita'],
+  indirizzo:['f-indirizzo','Indirizzo'], comune:['f-comune','Comune'],
+  cellulare:['f-cell','Cellulare'], email:['f-mail','Email']
+};
+
+/* Un campo mancante non deve costare tutto il percorso: si torna allo step 1,
+   si evidenzia cio' che manca e si porta il cursore sul primo. Il resto e'
+   gia' compilato e resta dov'e'. */
+function portaAiCampiMancanti(campi){
+  const noti=campi.filter(c=>CAMPI_FORM[c]);
+  if(!noti.length){
+    const e=document.getElementById('err-invio');
+    e.textContent='Mancano dati richiesti ('+campi.join(', ')+').';
+    e.classList.add('visibile');
+    return;
+  }
+  daCorreggere=noti.length;
+  mostra('s-1');
+  noti.forEach(c=>{
+    const el=document.getElementById(CAMPI_FORM[c][0]);
+    if(el) el.classList.add('err');
+  });
+  const err=document.getElementById('err-1');
+  err.innerHTML='Manca ancora: <strong>'+noti.map(c=>CAMPI_FORM[c][1]).join(', ')+
+    '</strong>. Compila e premi Continua: tornerai direttamente alla firma.';
+  err.classList.add('visibile');
+  const primo=document.getElementById(CAMPI_FORM[noti[0]][0]);
+  if(primo){ primo.scrollIntoView({block:'center',behavior:'smooth'}); setTimeout(()=>primo.focus(),320); }
+}
+
+/* La tastiera mobile riduce il viewport: senza questo il piede ancorato
+   sale sopra il campo attivo e il contenuto si schiaccia. */
+(function gestisciTastiera(){
+  const vv=window.visualViewport;
+  if(!vv) return;
+  const aggiorna=()=>{
+    const ridotto=(window.innerHeight-vv.height)>140;
+    document.body.classList.toggle('tastiera',ridotto);
+  };
+  vv.addEventListener('resize',aggiorna);
+  vv.addEventListener('scroll',aggiorna);
+})();
+
 function componiAvviso(){
   const attive=CONDIZIONI.filter(([k])=>stato[k]).map(([k])=>{
     if(k==='allergie'){
@@ -815,9 +871,11 @@ async function sigilla(){
       body:JSON.stringify(payload())});
     const d=await res.json();
     if(d.ok){ chiudi(); return; }
-    err.textContent=d.error==='Campi obbligatori mancanti'
-      ? 'Mancano dati richiesti ('+(d.campi||[]).join(', ')+').'
-      : (d.error||'Errore durante l\'invio. Riprova.');
+    if(d.error==='Campi obbligatori mancanti' && (d.campi||[]).length){
+      portaAiCampiMancanti(d.campi);
+      return;
+    }
+    err.textContent=d.error||'Errore durante l\'invio. Riprova.';
   }catch(e){
     err.textContent='Errore di rete. Controlla la connessione e riprova.';
   }
@@ -836,6 +894,7 @@ function chiudi(){
 
 CONDIZIONI.forEach(([k])=>stato[k]=false);
 montaFarmaci();
+document.addEventListener('input',e=>{ if(e.target.classList) e.target.classList.remove('err'); });
 window.addEventListener('resize',()=>{if(document.getElementById('s-3').classList.contains('attivo'))montaFirma()});
 </script>
 </body>
