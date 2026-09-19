@@ -275,6 +275,7 @@ button.errore[data-bersaglio=""]{cursor:default}
   margin-bottom:5px;font-weight:500}
 .avviso li::before{content:"";position:absolute;left:-15px;top:.62em;
   width:6px;height:6px;border-radius:50%;background:var(--siena)}
+.avviso li.minore{font-weight:600}
 .avviso li.neutra{color:var(--ivory-soft);font-weight:400}
 .avviso li.neutra::before{background:var(--ivory-mute)}
 .avviso-nota{font-size:14px;color:var(--ivory-mute);margin:var(--s2) 0 0;line-height:1.45}
@@ -941,6 +942,15 @@ function preparaData(){
   const i=new Date(Date.now()-86400000);
   e.max=i.getFullYear()+'-'+String(i.getMonth()+1).padStart(2,'0')+'-'+String(i.getDate()).padStart(2,'0');
 }
+function eta(){
+  const t=v('f-nascita'); if(!t) return null;
+  const n=new Date(t+'T00:00:00'); if(isNaN(n.getTime())) return null;
+  const o=new Date();
+  let a=o.getFullYear()-n.getFullYear();
+  const m=o.getMonth()-n.getMonth();
+  if(m<0||(m===0&&o.getDate()<n.getDate())) a--;
+  return a;
+}
 function dataPlausibile(){
   const t=v('f-nascita'); if(!t) return false;
   const n=new Date(t+'T00:00:00'); if(isNaN(n.getTime())) return false;
@@ -1014,17 +1024,20 @@ function portaAiCampiMancanti(campi){
 
 /* ------------------------------------------- avviso e consensi */
 function componiAvviso(){
-  const voci=CONDIZIONI.filter(([k])=>stato[k]).map(([k])=>{
+  /* L'eta' apre in cima: e' la prima cosa che cambia cosa si puo' fare,
+     e adesso che la data di nascita e' affidabile si puo' dire. */
+  const anni=eta();
+  const voci=(anni!==null&&anni<18?['<li class="minore">Minorenne: '+anni+' anni</li>']:[])
+    .concat(CONDIZIONI.filter(([k])=>stato[k]).map(([k])=>{
     if(k==='allergie'){ const d=v('f-allergie'); return d?'Allergie: '+esc(d):'Allergie'; }
     return ETICHETTE[k];
-  }).map(t=>'<li>'+t+'</li>');
+  }).map(t=>'<li>'+t+'</li>'));
   // il rifiuto delle foto non e' una condizione clinica, ma ad Alberto
   // serve saperlo: sta nello stesso avviso, con un peso diverso
   if(!el('c-foto').checked) voci.push('<li class="neutra">Fotografie: non acconsentite</li>');
   const box=el('avviso-salute');
-  if(!voci.length){ box.style.display='none'; return; }
-  el('avviso-lista').innerHTML=voci.join('');
-  box.style.display='block';
+  el('avviso-lista').innerHTML=voci.join('');   // svuota anche quando non c'e' nulla
+  box.style.display=voci.length?'block':'none';
 }
 /* Il consenso foto puo' essere rifiutato: non blocca niente, ma la scelta
    resta scritta sullo schermo e nel dato inviato. */
