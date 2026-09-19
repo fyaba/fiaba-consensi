@@ -1,237 +1,237 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FIABA — Modulo Consensi</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0A09">
+<title>FIABA — Consenso informato</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap');
+:root{
+  --ink:#0B0A09;           /* Obsidian, fondo */
+  --ink-2:#141210;         /* superficie sollevata */
+  --ink-3:#1E1A17;         /* superficie alta */
+  --ivory:#FDF5E6;         /* Ivory, il testo */
+  --ivory-soft:#C9BFAE;    /* testo secondario, tinto dal fondo */
+  --ivory-mute:#8C8377;    /* terziario */
+  --siena:#C2663A;         /* brace: accento vivo su fondo scuro */
+  --siena-deep:#A2542B;    /* Siena canonico */
+  --error:#D9705E;
+  --line:rgba(253,245,230,.13);
+  --line-strong:rgba(253,245,230,.26);
+  --serif:"Fraunces","Iowan Old Style",Georgia,serif;
+  --sans:"Inter","Helvetica Neue",Arial,sans-serif;
+  --s1:6px; --s2:12px; --s3:18px; --s4:24px; --s6:36px; --s8:52px;
+  --r:3px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ink); color:var(--ivory);
+  font-family:var(--sans); font-size:17px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  height:100dvh; overflow:hidden;
+}
+/* materia: grana + vignettatura, due strati */
+.grain{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.42;mix-blend-mode:overlay}
+.hatch{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.055}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(120% 85% at 50% 22%,transparent 38%,rgba(0,0,0,.62) 100%)}
+.wrap{position:relative;z-index:3;max-width:520px;margin:0 auto;height:100dvh;
+  padding:calc(env(safe-area-inset-top) + var(--s4)) var(--s4) calc(env(safe-area-inset-bottom) + var(--s4));
+  display:flex;flex-direction:column}
+.corpo{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.piede{flex-shrink:0;padding-top:var(--s3)}
+.testa{flex-shrink:0}
 
-  :root {
-    --color-bg: #ECE0C8;
-    --color-surface: #F4ECDD;
-    --color-obsidian: #000000;
-    --color-text: #000000;
-    --color-text-soft: #2C2B2A;
-    --color-accent: #A2542B;
-    --color-error: #B23A2E;
-    --color-divider: color-mix(in srgb, #000000 16%, transparent);
+/* — tipografia — */
+h1,h2,.serif{font-family:var(--serif);font-weight:500;letter-spacing:-.015em;line-height:1.08;margin:0}
+h1{font-size:clamp(34px,9.5vw,44px)}
+h2{font-size:clamp(27px,7.2vw,33px)}
+p{margin:0 0 var(--s3)}
+.lead{font-size:18px;line-height:1.62;color:var(--ivory-soft)}
+.muted{color:var(--ivory-mute);font-size:15px;line-height:1.55}
 
-    --color-neutral-600: #7B7A77;
-    --color-neutral-700: #5F5E5B;
-    --color-accent-100: #FFF1E8;
-    --color-accent-700: #884B2C;
+/* — marchio che si incide — */
+.mark{width:104px;margin:0 auto var(--s3);display:block}
+.mark svg{width:100%;height:auto;display:block;overflow:visible}
+.mark #unicorno path{fill:var(--ivory)}
+.mark #stella,.mark #stella path,.mark #stella g{fill:var(--siena) !important}
+.mark.incide #unicorno{animation:sorgi 1500ms cubic-bezier(.22,.9,.3,1) both}
+.mark.incide #stella{animation:accendi 900ms cubic-bezier(.3,.85,.35,1) 950ms both}
+@keyframes sorgi{
+  0%{opacity:0;transform:translateY(9px) scale(.975);filter:blur(6px)}
+  60%{opacity:1;filter:blur(0)}
+  100%{opacity:1;transform:none;filter:blur(0)}
+}
+@keyframes accendi{
+  0%{opacity:0;transform:scale(.55) rotate(-24deg)}
+  70%{opacity:1;transform:scale(1.1) rotate(3deg)}
+  100%{opacity:1;transform:none}
+}
+.wordmark{font-family:var(--serif);font-size:19px;letter-spacing:.34em;
+  text-indent:.34em;text-align:center;color:var(--ivory);font-weight:500}
+.kicker{text-align:center;color:var(--ivory-mute);font-size:12.5px;
+  letter-spacing:.2em;text-transform:uppercase;margin:var(--s2) 0 var(--s6)}
 
-    --font-heading: "Fraunces", "Iowan Old Style", Georgia, serif;
-    --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
-    --font-heading-weight: 600;
+/* — tacche incise, non pallini — */
+.tacche{display:flex;gap:7px;justify-content:center;margin-bottom:var(--s6)}
+.tacca{width:46px;height:3px;background:var(--line);position:relative;overflow:hidden;border-radius:2px}
+.tacca::after{content:"";position:absolute;inset:0;background:var(--siena);
+  transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.3,.9,.3,1)}
+.tacca.on::after{transform:scaleX(1)}
 
-    --space-1: 4.6px; --space-2: 9.2px; --space-3: 13.8px; --space-4: 18.4px;
-    --space-6: 27.6px; --space-8: 36.8px;
-    --radius-sm: 2px; --radius-md: 4px; --radius-lg: 7px;
-    --shadow-sm: 0 1px 2px color-mix(in srgb,#000000 14%,transparent);
-  }
+/* — campi — */
+.campo{margin-bottom:var(--s4)}
+label{display:block;font-size:13.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ivory-mute);margin-bottom:var(--s1)}
+.input{
+  width:100%;background:transparent;border:0;border-bottom:1.5px solid var(--line-strong);
+  color:var(--ivory);font-family:var(--sans);font-size:17px;padding:11px 2px;
+  border-radius:0;-webkit-appearance:none;appearance:none;transition:border-color .22s
+}
+.input:focus{outline:none;border-bottom-color:var(--siena)}
+.input::placeholder{color:var(--ivory-mute)}
+.input.err{border-bottom-color:var(--error)}
 
-  * { box-sizing: border-box; }
-  html { height: 100%; }
-  body {
-    margin: 0;
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    font-family: var(--font-body);
-    min-height: 100vh;
-    min-height: 100dvh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: var(--space-6) var(--space-6) var(--space-8);
-    -webkit-font-smoothing: antialiased;
-  }
-  h1, h2, h3, .heading { font-family: var(--font-heading); font-weight: var(--font-heading-weight); }
+/* — bottoni — */
+.btn{
+  display:block;width:100%;padding:17px 20px;margin-bottom:var(--s2);
+  font-family:var(--sans);font-size:16.5px;font-weight:500;letter-spacing:.02em;
+  border-radius:var(--r);cursor:pointer;transition:all .2s;
+  background:transparent;color:var(--ivory);border:1.5px solid var(--line-strong)
+}
+.btn:hover{border-color:var(--ivory)}
+.btn-primario{
+  background:var(--ivory);color:var(--ink);border-color:var(--ivory);
+  font-weight:600;font-size:17px
+}
+.btn-primario:hover{background:#fff}
+.btn-primario:disabled{opacity:.45;cursor:default}
+.btn-siena{background:var(--siena);border-color:var(--siena);color:#120C08;font-weight:600}
+.btn-ghost{border:0;color:var(--ivory-mute);font-size:15px;padding:12px;text-decoration:underline;
+  text-underline-offset:3px;background:none;width:100%}
 
-  .card {
-    width: 100%;
-    max-width: 480px;
-    border: 1px solid var(--color-divider);
-    border-radius: var(--radius-lg);
-    padding: var(--space-8) var(--space-6);
-    margin-top: var(--space-8);
-  }
+/* — schermate — */
+.schermo{display:none}
+.schermo.attivo{display:flex;flex-direction:column;height:100%;animation:entra .5s cubic-bezier(.22,.9,.3,1) both}
+@keyframes entra{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
-  @media (max-width: 480px) {
-    body { padding: var(--space-4) var(--space-3) var(--space-6); }
-    .card { padding: var(--space-6) var(--space-4); margin-top: var(--space-4); }
-  }
+/* — interruttori salute — */
+.riga-sw{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) 0;
+  border-bottom:1px solid var(--line)}
+.riga-sw span{font-size:16.5px;line-height:1.45;flex:1;color:var(--ivory-soft)}
+.sw{width:54px;height:31px;min-width:54px;border-radius:16px;background:var(--ink-3);
+  border:1.5px solid var(--line-strong);position:relative;cursor:pointer;transition:all .25s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:23px;height:23px;border-radius:50%;
+  background:var(--ivory-mute);transition:all .25s cubic-bezier(.3,.9,.3,1)}
+.sw.on{background:var(--siena);border-color:var(--siena)}
+.sw.on::after{transform:translateX(23px);background:var(--ink)}
 
-  .screen { display: none; }
-  .screen.visible { display: block; animation: fade 0.4s ease; }
-  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.conta{text-align:center;font-size:13px;letter-spacing:.16em;color:var(--ivory-mute);
+  text-transform:uppercase;margin-bottom:var(--s4)}
+.carta-zona{display:flex;align-items:center;justify-content:center;overflow:hidden}
+.carta{width:100%;text-align:center}
+.carta h2{font-size:clamp(26px,7.4vw,34px);line-height:1.14}
+.carta-nota{margin-top:var(--s3);color:var(--ivory-mute);font-size:16px;min-height:1.6em}
+.carta.entra{animation:cartaIn .34s cubic-bezier(.22,.9,.3,1) both}
+@keyframes cartaIn{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+.carta.esce{animation:cartaOut .2s ease-in both}
+@keyframes cartaOut{to{opacity:0;transform:translateX(-22px)}}
+.scelte{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.scelte .btn{margin:0;padding:19px 16px;font-size:17px}
+.btn-si{border-color:var(--siena);color:var(--siena)}
+.btn-si:hover{background:var(--siena);color:#120C08}
+.btn-no:hover{border-color:var(--ivory)}
+/* — firma: la lastra — */
+.firma-box{
+  border:1.5px solid var(--line-strong);border-radius:var(--r);height:172px;
+  position:relative;touch-action:none;background:var(--ink-2);
+  box-shadow:inset 0 2px 18px rgba(0,0,0,.55);transition:border-color .25s
+}
+.firma-box.firmato{border-color:var(--siena)}
+.firma-box::after{content:"";position:absolute;left:22px;right:22px;bottom:44px;
+  border-bottom:1px solid var(--line-strong)}
+#signature-canvas{width:100%;height:100%;display:block;touch-action:none;position:relative;z-index:1}
+.firma-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  gap:10px;color:var(--ivory-mute);font-size:16px;pointer-events:none}
+.firma-box.firmato .firma-hint{display:none}
 
-  .progress-dots { display: flex; gap: var(--space-2); justify-content: center; margin-bottom: var(--space-8); }
-  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-divider); }
-  .dot.active { background: var(--color-accent); }
+/* — sigillo — */
+.sigillo{width:120px;height:120px;margin:0 auto var(--s4);display:block}
+.sigillo svg{width:100%;height:100%;display:block}
+.sigillo.impresso{animation:imprimi 760ms cubic-bezier(.16,.86,.32,1) both}
+@keyframes imprimi{
+  0%{opacity:0;transform:scale(1.32);filter:blur(7px)}
+  55%{opacity:1}
+  100%{opacity:1;transform:none;filter:blur(0)}
+}
 
-  .hr { border: none; border-top: 1px solid var(--color-divider); margin: var(--space-6) 0; }
+/* — brace: il caricatore — */
+.brace{display:flex;align-items:center;justify-content:center;gap:12px;
+  color:var(--ivory-mute);font-size:15.5px;padding:var(--s3) 0}
+.brace svg{width:22px;height:22px;animation:respira 1.5s ease-in-out infinite}
+@keyframes respira{
+  0%,100%{opacity:.32;transform:scale(.86)}
+  50%{opacity:1;transform:scale(1.05)}
+}
 
-  .field { margin-bottom: var(--space-4); }
-  label { display: block; font-size: 15px; color: var(--color-neutral-700); margin-bottom: var(--space-1); letter-spacing: 0.02em; }
-  .input, select {
-    width: 100%; padding: var(--space-2) 0; background: transparent; border: none;
-    border-bottom: 1px solid var(--color-divider); color: var(--color-text);
-    font-family: var(--font-body); font-size: 17px; -webkit-appearance: none; appearance: none;
-    border-radius: 0;
-  }
-  .input:focus, select:focus { outline: none; border-bottom-color: var(--color-accent); }
-  .input.field-error, select.field-error { border-bottom-color: var(--color-error); }
-  .step-error { display: none; color: var(--color-error); font-size: 15px; margin: 0 0 var(--space-4); }
-  .step-error.visible { display: block; }
-  select {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%235F5E5B'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right center;
-    padding-right: var(--space-4);
-  }
+/* — consensi — */
+.patto{border-top:1px solid var(--line);padding-top:var(--s4);margin-top:var(--s6)}
+.riga-check{display:flex;gap:var(--s3);align-items:flex-start;margin-bottom:var(--s3)}
+.riga-check input[type=checkbox]{width:25px;height:25px;min-width:25px;margin-top:2px;accent-color:var(--siena)}
+.riga-check label{font-size:16px;line-height:1.5;text-transform:none;letter-spacing:0;
+  color:var(--ivory-soft);margin:0}
+a{color:var(--siena);text-underline-offset:3px}
+.errore{display:none;color:var(--error);font-size:15px;margin:0 0 var(--s3)}
+.errore.visibile{display:block}
 
-  .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) 0; border-bottom: 1px solid var(--color-divider); gap: var(--space-4); cursor: pointer; }
-  .toggle-row span { font-size: 17px; line-height: 1.45; }
-  .toggle { flex-shrink: 0; width: 42px; height: 24px; border-radius: 12px; border: 1px solid var(--color-divider); background: transparent; position: relative; transition: border-color 0.2s; }
-  .toggle.on { border-color: var(--color-accent); }
-  .toggle-knob { width: 16px; height: 16px; border-radius: 50%; background: var(--color-text); position: absolute; top: 3px; left: 3px; transition: left 0.2s, background 0.2s; }
-  .toggle.on .toggle-knob { left: 22px; background: var(--color-accent); }
+.avviso{border:1.5px solid var(--siena);border-radius:var(--r);
+  background:linear-gradient(180deg,rgba(194,102,58,.13),rgba(194,102,58,.05));
+  padding:var(--s3) var(--s3) var(--s2);margin-bottom:var(--s4)}
+.avviso-testa{display:flex;align-items:center;gap:9px;color:var(--siena);
+  font-size:13px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;
+  margin-bottom:var(--s2)}
+.avviso ul{margin:0;padding-left:19px;list-style:none}
+.avviso li{position:relative;font-size:16.5px;line-height:1.5;color:var(--ivory);
+  margin-bottom:5px;font-weight:500}
+.avviso li::before{content:"";position:absolute;left:-15px;top:.62em;
+  width:6px;height:6px;border-radius:50%;background:var(--siena)}
+.avviso-nota{font-size:14px;color:var(--ivory-mute);margin:var(--s2) 0 0;line-height:1.45}
+/* — modale — */
+.velo{display:none;position:fixed;inset:0;background:rgba(5,4,3,.85);z-index:20;
+  align-items:center;justify-content:center;padding:var(--s4)}
+.velo.visibile{display:flex}
+.modale{background:var(--ink-2);border:1px solid var(--line-strong);border-radius:var(--r);
+  padding:var(--s6) var(--s4);max-width:440px;max-height:78vh;overflow-y:auto}
+.modale h3{font-family:var(--serif);font-size:23px;margin:0 0 var(--s3);font-weight:500}
+.modale p{font-size:15.5px;line-height:1.62;color:var(--ivory-soft)}
 
-  .btn {
-    display: block; width: 100%; padding: var(--space-3) var(--space-4);
-    background: transparent; border: 1px solid var(--color-text); border-radius: var(--radius-sm);
-    color: var(--color-text); font-family: var(--font-body); font-size: 17px; font-weight: 500;
-    cursor: pointer; text-align: center; margin-top: var(--space-2); transition: background 0.15s;
-  }
-  .btn:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
-  .btn-accent { border-color: var(--color-accent); color: var(--color-accent); }
-  .btn-accent:hover { background: var(--color-accent-100); }
-  .btn-ghost {
-    border: none; background: none; color: var(--color-neutral-700); font-size: 15px;
-    padding: var(--space-2) 0; width: auto; display: block; margin: var(--space-4) auto 0; cursor: pointer;
-  }
-
-  .checkbox-row { display: flex; align-items: flex-start; gap: var(--space-3); margin: var(--space-4) 0; }
-  .checkbox-row input[type=checkbox] {
-    width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0;
-    border: 1px solid var(--color-text); border-radius: var(--radius-sm);
-    appearance: none; -webkit-appearance: none; cursor: pointer; position: relative; background: transparent;
-  }
-  .checkbox-row input[type=checkbox]:checked { border-color: var(--color-accent); }
-  .checkbox-row input[type=checkbox]:checked::after {
-    content: ''; position: absolute; left: 6px; top: 2px; width: 5px; height: 9px;
-    border: solid var(--color-accent); border-width: 0 2px 2px 0; transform: rotate(45deg);
-  }
-  .checkbox-row label { font-size: 16px; line-height: 1.55; color: var(--color-text-soft); }
-  .checkbox-row a { color: var(--color-accent); text-decoration: underline; }
-
-  #signature-placeholder {
-    border: 1px dashed var(--color-divider); border-radius: var(--radius-md); height: 150px;
-    display: flex; align-items: center; justify-content: center; color: var(--color-neutral-600);
-    font-size: 16px; text-align: center;
-  }
-  /* --- Carattere: gerarchia di superficie (19-09-2026) --- */
-  /* --- Materia: il brand sulla superficie (19-09-2026) --- */
-  .paper-grain {
-    position: fixed; inset: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 0; opacity: .085; mix-blend-mode: multiply;
-  }
-  #app, .screen, .modal-backdrop { position: relative; z-index: 1; }
-  .brand-mark { width: 92px; margin: 0 auto var(--space-2); display: block; }
-  .brand-mark svg { width: 100%; height: auto; display: block; }
-  .brand-word {
-    font-size: 25px; text-align: center; letter-spacing: 0.06em;
-    margin-bottom: var(--space-1);
-  }
-  /* --- Sigillo di chiusura: il punzone impresso sulla carta --- */
-  .seal { width: 104px; height: 104px; margin: 0 auto var(--space-4); display: block; }
-  .seal svg { width: 100%; height: 100%; display: block; }
-  .seal.struck { animation: impressione 620ms cubic-bezier(.16,.84,.34,1) both; }
-  @keyframes impressione {
-    0%   { transform: scale(1.18); opacity: 0; filter: blur(1.5px); }
-    55%  { opacity: 1; }
-    100% { transform: scale(1); opacity: 1; filter: blur(0); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .seal.struck { animation: none; }
-  }
-  .intro-card {
-    background: var(--color-surface); border-radius: var(--radius-lg);
-    padding: var(--space-6) var(--space-4); margin-bottom: var(--space-4);
-    border-top: 3px solid var(--color-accent);
-    box-shadow: 0 2px 10px color-mix(in srgb, #000000 9%, transparent);
-  }
-  .intro-title {
-    font-size: 30px; line-height: 1.12; margin: 0 0 var(--space-4);
-    color: var(--color-obsidian);
-  }
-  .intro-lead {
-    font-size: 17px; line-height: 1.55; color: var(--color-text-soft);
-    margin: 0 0 var(--space-3);
-  }
-  .intro-lead strong { color: var(--color-obsidian); font-weight: 600; }
-  .intro-note {
-    font-size: 15px; line-height: 1.5; color: var(--color-neutral-700);
-    margin: var(--space-4) 0 0; padding-top: var(--space-3);
-    border-top: 1px solid var(--color-divider);
-  }
-  .field { margin-bottom: var(--space-4); }
-  .progress-dots { margin-bottom: var(--space-6); }
-  .dot { width: 9px; height: 9px; }
-  .dot.active { background: var(--color-accent); }
-  @media (prefers-reduced-motion: reduce) {
-    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-  }
-  .btn-primary {
-    background: var(--color-obsidian); color: var(--color-bg);
-    border: 2px solid var(--color-obsidian); font-weight: 600; font-size: 18px;
-  }
-  .btn-primary:disabled { opacity: .55; }
-  .signature-wrap {
-    border: 2px solid var(--color-accent); border-radius: var(--radius-md); height: 190px;
-    touch-action: none; position: relative; background: #FFFFFF;
-    box-shadow: inset 0 1px 3px color-mix(in srgb, #000000 10%, transparent);
-  }
-  .signature-wrap::after {
-    content: ""; position: absolute; left: 18px; right: 18px; bottom: 46px;
-    border-bottom: 1px solid color-mix(in srgb, #000000 28%, transparent);
-  }
-  .signature-wrap.signed { border-color: var(--color-obsidian); }
-  .signature-wrap.has-error { border-color: var(--color-error); }
-  #signature-canvas { width: 100%; height: 100%; display: block; touch-action: none; }
-  .signature-hint {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    color: var(--color-accent-700); font-size: 16px; font-weight: 500; pointer-events: none;
-    gap: 9px;
-  }
-  .signature-wrap.signed .signature-hint { display: none; }
-  .submit-error { display: none; color: var(--color-error); font-size: 15px; margin: var(--space-3) 0 0; text-align: center; }
-  .submit-error.visible { display: block; }
-
-  .modal-overlay { display: none; position: fixed; inset: 0; background: color-mix(in srgb, #000000 45%, transparent); z-index: 100; align-items: center; justify-content: center; padding: var(--space-4); }
-  .modal-overlay.visible { display: flex; }
-  .modal-box { background: var(--color-bg); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); max-width: 440px; width: 100%; max-height: 80vh; overflow-y: auto; padding: var(--space-6); }
-  .modal-box h3 { font-size: 20px; margin: 0 0 var(--space-3); }
-  .modal-box p { font-size: 16px; line-height: 1.6; color: var(--color-text-soft); margin: 0 0 var(--space-3); }
-  .modal-draft-warning { color: var(--color-error); font-size: 15px; font-weight: 500; }
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;
+    transition-duration:.01ms !important}
+}
 </style>
 </head>
 <body>
-<svg class="paper-grain" aria-hidden="true" focusable="false">
-  <filter id="grana"><feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="4" stitchTiles="stitch"/>
-  <feColorMatrix type="saturate" values="0"/></filter>
-  <rect width="100%" height="100%" filter="url(#grana)"/>
-</svg>
+<svg class="grain" aria-hidden="true"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#g)"/></svg>
+<svg class="hatch" aria-hidden="true"><defs>
+  <pattern id="tratteggio" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
+    <line x1="0" y1="0" x2="0" y2="9" stroke="#FDF5E6" stroke-width=".6"/>
+  </pattern>
+  <radialGradient id="sfuma"><stop offset="0%" stop-color="#fff" stop-opacity=".85"/><stop offset="70%" stop-color="#fff" stop-opacity=".12"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <mask id="m"><rect width="100%" height="100%" fill="url(#sfuma)"/></mask>
+</defs><rect width="100%" height="100%" fill="url(#tratteggio)" mask="url(#m)"/></svg>
+<div class="vignette" aria-hidden="true"></div>
+<div class="wrap">
 
-  <div class="card">
-
-    <section id="screen-intro" class="screen visible">
-      <div class="brand-mark" role="img" aria-label="FIABA">
-        <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g id="stella" fill="#A2542B" stroke="none">
+<!-- INGRESSO -->
+<section id="s-intro" class="schermo attivo">
+  <div class="corpo">
+  <div class="mark incide" id="mark" role="img" aria-label="FIABA">
+    <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g id="stella" fill="#A2542B" stroke="none">
     <g transform="translate(360.89,72.00) scale(0.147438) translate(-273.20,-168.00) translate(0.0,2505.0) scale(0.1,-0.1)">
       <path d="M12480 23350 c-11 -11 -20 -30 -20 -43 0 -13 -4 -27 -9 -32 -8 -10
 -19 -59 -45 -215 -25 -149 -34 -210 -66 -475 -5 -38 -16 -122 -24 -185 -9 -63
@@ -474,334 +474,369 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
 -4z"/>
     </g>
   </g></svg>
-      </div>
-      <div class="heading brand-word">FIABA</div>
-      <div style="text-align: center; color: var(--color-neutral-700); font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: var(--space-6);">Atelier della Memoria e del Segno Permanente</div>
-      <div class="intro-card">
-        <h1 class="heading intro-title">Consenso informato</h1>
-        <p class="intro-lead">Prima di tatuarti, la legge e il buon senso chiedono due cose: che tu sappia cosa comporta, e che noi sappiamo come lavorare in sicurezza sulla tua pelle.</p>
-        <p class="intro-lead">Sono tre passaggi — i tuoi dati, la tua salute, il consenso da firmare. <strong>Circa 90 secondi.</strong></p>
-        <p class="intro-note">I dati restano nell'archivio dell'atelier. Nessun uso esterno, nessuna cessione.</p>
-      </div>
-      <button class="btn btn-accent" style="margin-top: var(--space-6);" onclick="startFlow(false)">Prima volta qui</button>
-      <button class="btn" onclick="startFlow(true)">Sono già stato qui</button>
-      <p style="font-size: 14px; color: var(--color-neutral-700); text-align: center; margin-top: var(--space-3); line-height:1.5;">Solo se hai già compilato questo modulo digitale in una visita precedente.</p>
-    </section>
+  </div>
+  <div class="wordmark">FIABA</div>
+  <p class="kicker">Atelier della Memoria</p>
 
-    <section id="screen-step1" class="screen">
-      <div class="progress-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
-      <h2 class="heading" style="font-size: 26px; margin-bottom: var(--space-2);">Prima di tutto, tu.</h2>
-      <p style="color: var(--color-text-soft); font-size: 16px; line-height:1.5; margin-bottom: var(--space-6);" id="step1-subtitle">I tuoi dati restano nell'archivio dell'atelier. Nessun uso esterno, nessuna cessione.</p>
-      <p class="step-error" id="step1-error">Compila i campi evidenziati prima di continuare.</p>
-
-      <div class="field"><label>Nome</label><input class="input" type="text" id="f-nome" autocomplete="given-name"></div>
-      <div class="field"><label>Cognome</label><input class="input" type="text" id="f-cognome" autocomplete="family-name"></div>
-      <div id="step1-full-fields">
-      <div class="field"><label>Data di nascita</label><input class="input" type="date" id="f-data-nascita" autocomplete="bday"></div>
-      <div class="field"><label>Luogo di nascita</label><input class="input" type="text" id="f-luogo-nascita"></div>
-      <div class="field"><label>Indirizzo</label><input class="input" type="text" id="f-indirizzo" autocomplete="street-address"></div>
-      <div class="field"><label>Comune</label><input class="input" type="text" id="f-comune" autocomplete="address-level2"></div>
-      <div class="field"><label>Cellulare (facoltativo)</label><input class="input" type="tel" id="f-cellulare" autocomplete="tel"></div>
-      <div class="field"><label>Email</label><input class="input" type="email" id="f-email" autocomplete="email"></div>
-      <div class="field">
-        <label>Nazionalità</label>
-        <select id="f-nazionalita">
-          <option value="">—</option>
-          <option value="ITALIANO">Italiana</option>
-          <option value="STRANIERO">Estera</option>
-        </select>
-      </div>
-      </div>
-
-      <button class="btn btn-accent" onclick="if(validateStep1()) goToStep(2)">Avanti</button>
-    </section>
-
-    <section id="screen-step2" class="screen">
-      <div class="progress-dots"><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
-      <h2 class="heading" style="font-size: 26px; margin-bottom: var(--space-2);">La tua pelle, le nostre mani.</h2>
-      <p style="color: var(--color-text-soft); font-size: 16px; line-height:1.5; margin-bottom: var(--space-4);">Queste domande ci servono per lavorare in sicurezza. Rispondi con un tocco — solo ciò che è rilevante.</p>
-      <p class="step-error" id="step2-error">Specifica quali allergie prima di continuare.</p>
-
-      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Gravidanza o allattamento</span><div class="toggle" data-field="gravidanza_allattamento"><div class="toggle-knob"></div></div></div>
-      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Farmaci anticoagulanti</span><div class="toggle" data-field="anticoagulanti"><div class="toggle-knob"></div></div></div>
-      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle')); toggleAllergieDettaglio()"><span>Allergie note (lattice, nichel, anestetici...)</span><div class="toggle" data-field="allergie"><div class="toggle-knob"></div></div></div>
-      <div class="field" id="field-allergie-dettaglio" style="display: none; margin-top: var(--space-3);">
-        <label>Specifica quali</label><input class="input" type="text" id="f-allergie-dettaglio">
-      </div>
-      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Diabete</span><div class="toggle" data-field="diabete"><div class="toggle-knob"></div></div></div>
-      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Cheloidi o cicatrici ipertrofiche</span><div class="toggle" data-field="cheloidi"><div class="toggle-knob"></div></div></div>
-      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Epilessia</span><div class="toggle" data-field="epilessia"><div class="toggle-knob"></div></div></div>
-      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Patologie cardiache</span><div class="toggle" data-field="patologie_cardiache"><div class="toggle-knob"></div></div></div>
-      <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Patologie dermatologiche in corso</span><div class="toggle" data-field="patologie_dermatologiche"><div class="toggle-knob"></div></div></div>
-
-      <div class="field" style="margin-top: var(--space-6);"><label>Farmaci attualmente in uso (facoltativo)</label><input class="input" type="text" id="f-farmaci"></div>
-      <div class="field"><label>Altro da segnalare (facoltativo)</label><input class="input" type="text" id="f-altro"></div>
-
-      <p style="color: var(--color-neutral-600); font-size: 15px; font-style: italic; text-align: center; margin: var(--space-6) 0;">Se qualcosa cambia tra oggi e la seduta, dillo. È più importante di qualsiasi modulo.</p>
-
-      <button class="btn btn-accent" onclick="if(validateStep2()) goToStep(3)">Avanti</button>
-      <button class="btn-ghost" onclick="goToStep(1)">Indietro</button>
-    </section>
-
-    <section id="screen-step3" class="screen">
-      <div class="progress-dots"><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
-      <h2 class="heading" style="font-size: 26px; margin-bottom: var(--space-2);">Il patto.</h2>
-      <p style="color: var(--color-text-soft); font-size: 16px; line-height:1.5; margin-bottom: var(--space-4);">Un segno permanente merita un accordo chiaro.</p>
-      <p class="step-error" id="step3-error">Devi accettare il trattamento dei dati per continuare.</p>
-
-      <div class="checkbox-row">
-        <input type="checkbox" id="f-consenso-base">
-        <label for="f-consenso-base">Acconsento al trattamento dei miei dati personali e sanitari per le finalità descritte. <a href="#" onclick="openModal(); return false;">Leggi tutto</a></label>
-      </div>
-
-      <button class="btn-ghost" onclick="togglePanel()">Vuoi personalizzare i consensi? ▾</button>
-      <div id="panel-consensi" style="display: none;">
-        <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Comunicazioni commerciali</span><div class="toggle" data-field="comunicazioni_commerciali"><div class="toggle-knob"></div></div></div>
-        <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Pubblicazione immagini — solo opera</span><div class="toggle" data-field="immagini_solo_opera"><div class="toggle-knob"></div></div></div>
-        <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Pubblicazione immagini — corpo visibile</span><div class="toggle" data-field="immagini_corpo_visibile"><div class="toggle-knob"></div></div></div>
-        <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Pubblicazione immagini — completa</span><div class="toggle" data-field="immagini_completa"><div class="toggle-knob"></div></div></div>
-      </div>
-
-      <div class="hr"></div>
-      <p class="heading" style="text-align: center; font-size: 15px; margin-bottom: var(--space-3);">La tua firma chiude questo accordo e apre il lavoro.</p>
-      <div class="signature-wrap" id="signature-wrap">
-        <canvas id="signature-canvas"></canvas>
-        <div class="signature-hint" id="signature-hint"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/></svg><span>Firma qui con il dito</span></div>
-      </div>
-      <button class="btn-ghost" onclick="clearSignature()">Cancella firma</button>
-
-      <button class="btn btn-primary" id="btn-concludi" style="margin-top: var(--space-6);" onclick="submitAndClose()">Firma e invia</button>
-      <p class="submit-error" id="submit-error"></p>
-      <button class="btn-ghost" onclick="goToStep(2)">Indietro</button>
-    </section>
-
-    <section id="screen-closing" class="screen">
-      <div style="text-align: center; padding: var(--space-8) 0;">
-        <!-- SEGNAPOSTO: stella a otto punte del Logo Master.
-             Da sostituire col punzone F-chiave una volta corretto
-             (orecchie asimmetriche) e vettorializzato — task backlog FIABA. -->
-        <div class="seal" id="seal" aria-hidden="true">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="47" fill="none" stroke="#A2542B" stroke-width="1.4" opacity=".55"/>
-            <circle cx="50" cy="50" r="41" fill="none" stroke="#A2542B" stroke-width=".7" opacity=".35"/>
-            <path d="M50 12 L56.5 39.5 L84 33 L61.5 50 L84 67 L56.5 60.5 L50 88 L43.5 60.5 L16 67 L38.5 50 L16 33 L43.5 39.5 Z"
-                  fill="#A2542B"/>
-          </svg>
-        </div>
-        <div class="heading" style="font-size: 26px; margin-bottom: var(--space-2);">Fatto.</div>
-        <p style="color: var(--color-text-soft);"><span id="closing-name"></span>il tuo archivio è aperto. Ci vediamo al tavolo.</p>
-      </div>
-    </section>
+  <h1>Prima di<br>incidere.</h1>
+  <p class="lead" style="margin-top:var(--s4)">Un segno permanente chiede due cose: che tu sappia cosa comporta, e che io sappia come lavorare in sicurezza sulla tua pelle.</p>
+  <p class="lead">Tre passaggi — chi sei, la tua tempra, il patto da sigillare. <strong style="color:var(--ivory);font-weight:600">Novanta secondi.</strong></p>
+  <p class="muted" style="border-top:1px solid var(--line);padding-top:var(--s3);margin-top:var(--s4)">I tuoi dati restano nell'archivio dell'atelier. Nessun uso esterno, nessuna cessione.</p>
 
   </div>
+  <div class="piede">
+    <button class="btn btn-primario" onclick="avvia(false)">È la prima volta</button>
+    <button class="btn" onclick="avvia(true)">Sono già stato inciso qui</button>
+  </div>
+</section>
 
-  <div class="modal-overlay" id="modal-informativa" onclick="if(event.target===this) closeModal()">
-    <div class="modal-box">
-      <h3 class="heading">Informativa sul trattamento dei dati</h3>
-      <p class="modal-draft-warning">BOZZA — in attesa di validazione da parte del consulente privacy. Non è il testo legale definitivo.</p>
-      <p><strong>Titolare del trattamento:</strong> FIABA — Atelier della Memoria e del Segno Permanente.</p>
-      <p><strong>Finalità:</strong> esecuzione del servizio di tatuaggio, inclusa la valutazione delle condizioni di sicurezza sanitaria necessarie alla seduta.</p>
-      <p><strong>Base giuridica:</strong> consenso esplicito per i dati sanitari (art. 9 GDPR); esecuzione del servizio per gli altri dati.</p>
-      <p><strong>Destinatari:</strong> nessuno. I dati non vengono ceduti a terzi, salvo consenso separato per comunicazioni commerciali o pubblicazione immagini.</p>
-      <p><strong>Conservazione:</strong> dati anagrafici e sanitari, 10 anni. Consensi facoltativi (marketing, immagini), durata del rapporto + 2 anni salvo revoca.</p>
-      <p><strong>Diritti:</strong> accesso, rettifica, cancellazione, revoca del consenso in qualsiasi momento, contattando l'atelier direttamente.</p>
-      <button class="btn" onclick="closeModal()">Chiudi</button>
+<!-- 1 · ANAGRAFICA -->
+<section id="s-1" class="schermo">
+  <div class="testa"><div class="tacche"><div class="tacca on"></div><div class="tacca"></div><div class="tacca"></div></div></div>
+  <div class="corpo">
+  <h2>Chi sei.</h2>
+  <p class="lead" style="margin:var(--s3) 0 var(--s6)" id="sub-1">Il nome che entra nell'archivio, e resta.</p>
+  <p class="errore" id="err-1">Compila i campi segnati prima di proseguire.</p>
+
+  <div class="campo"><label for="f-nome">Nome</label><input class="input" type="text" id="f-nome" autocomplete="given-name"></div>
+  <div class="campo"><label for="f-cognome">Cognome</label><input class="input" type="text" id="f-cognome" autocomplete="family-name"></div>
+  <div id="campi-pieni">
+    <div class="campo"><label for="f-nascita">Data di nascita</label><input class="input" type="date" id="f-nascita" autocomplete="bday"></div>
+    <div class="campo"><label for="f-luogo">Luogo di nascita</label><input class="input" type="text" id="f-luogo"></div>
+    <div class="campo"><label for="f-indirizzo">Indirizzo</label><input class="input" type="text" id="f-indirizzo" autocomplete="street-address"></div>
+    <div class="campo"><label for="f-comune">Comune</label><input class="input" type="text" id="f-comune" autocomplete="address-level2"></div>
+  </div>
+  <div class="campo"><label for="f-cell">Cellulare</label><input class="input" type="tel" id="f-cell" autocomplete="tel"></div>
+  <div class="campo"><label for="f-mail">Email</label><input class="input" type="email" id="f-mail" autocomplete="email"></div>
+
+  </div>
+  <div class="piede">
+    <button class="btn btn-primario" onclick="vai(2)">Continua</button>
+    <button class="btn-ghost" onclick="vai(0)">Torna indietro</button>
+  </div>
+</section>
+
+<!-- 2 · SALUTE — una domanda per volta -->
+<section id="s-2" class="schermo">
+  <div class="testa">
+    <div class="tacche"><div class="tacca on"></div><div class="tacca on"></div><div class="tacca"></div></div>
+    <div class="conta" id="conta-2">1 di 8</div>
+  </div>
+  <div class="corpo carta-zona">
+    <div class="carta" id="carta">
+      <h2 id="carta-dom">&nbsp;</h2>
+      <p class="lead carta-nota" id="carta-nota"></p>
+      <div class="campo" id="campo-allergie" style="display:none;margin-top:var(--s4)">
+        <label for="f-allergie">Quali</label>
+        <input class="input" type="text" id="f-allergie" placeholder="lattice, metalli, anestetici…">
+      </div>
+      <p class="errore" id="err-2">Specifica quali allergie prima di proseguire.</p>
+    </div>
+  </div>
+  <div class="piede">
+    <div class="scelte">
+      <button class="btn btn-no" onclick="rispondi(false)">No</button>
+      <button class="btn btn-si" onclick="rispondi(true)">Sì</button>
+    </div>
+    <button class="btn-ghost" onclick="indietroCarta()">Torna indietro</button>
+  </div>
+</section>
+
+<!-- 3 · PATTO -->
+<section id="s-3" class="schermo">
+  <div class="testa"><div class="tacche"><div class="tacca on"></div><div class="tacca on"></div><div class="tacca on"></div></div></div>
+  <div class="corpo">
+  <h2>Il patto.</h2>
+  <p class="lead" style="margin:var(--s3) 0 var(--s4)">Un segno che resta merita un accordo chiaro.</p>
+
+  <div class="avviso" id="avviso-salute" style="display:none">
+    <div class="avviso-testa">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 9v4.5"/><path d="M12 17h.01"/><path d="M10.3 3.3 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.3a2 2 0 0 0-3.4 0z"/></svg>
+      <span>Da dire ad Alberto prima di iniziare</span>
+    </div>
+    <ul id="avviso-lista"></ul>
+    <p class="avviso-nota">Se qualcosa qui è sbagliato, torna indietro e correggilo.</p>
+  </div>
+  <p class="errore" id="err-3">Serve il consenso e la firma per chiudere.</p>
+
+  <div class="patto" style="border:0;margin:0;padding:0">
+    <div class="riga-check">
+      <input type="checkbox" id="c-dati">
+      <label for="c-dati">Acconsento al trattamento dei miei dati personali e sanitari per le finalità descritte. <a href="#" onclick="apriInformativa();return false">Leggi l'informativa</a></label>
+    </div>
+    <div class="riga-check">
+      <input type="checkbox" id="c-foto">
+      <label for="c-foto">Acconsento alle fotografie del lavoro e al loro uso nel portfolio dell'atelier. <span style="color:var(--ivory-mute)">(facoltativo)</span></label>
     </div>
   </div>
 
+  <p style="text-align:center;font-family:var(--serif);font-size:19px;line-height:1.4;margin:var(--s8) 0 var(--s4);color:var(--ivory)">La tua firma chiude il patto<br>e apre il lavoro.</p>
+
+  <div class="firma-box" id="firma-box">
+    <canvas id="signature-canvas"></canvas>
+    <div class="firma-hint" id="firma-hint">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/></svg>
+      <span>Firma qui con il dito</span>
+    </div>
+  </div>
+  <button class="btn-ghost" onclick="pulisciFirma()">Cancella e rifai</button>
+
+  <div id="invio-brace" style="display:none">
+    <div class="brace"><svg viewBox="0 0 24 24" fill="#C2663A" aria-hidden="true"><path d="M12 2l1.6 6.8L20 7l-5.4 5 5.4 5-6.4-1.8L12 22l-1.6-6.8L4 17l5.4-5L4 7l6.4 1.8z"/></svg><span>Sto sigillando…</span></div>
+  </div>
+
+  </div>
+  <div class="piede">
+    <p class="errore" id="err-invio" style="text-align:center"></p>
+    <button class="btn btn-primario" id="btn-sigilla" onclick="sigilla()">Firma e sigilla</button>
+    <button class="btn-ghost" onclick="vai(2)">Torna indietro</button>
+  </div>
+</section>
+
+<!-- CHIUSURA -->
+<section id="s-fine" class="schermo">
+  <div class="corpo" style="display:flex;align-items:center;justify-content:center">
+  <div style="text-align:center">
+    <!-- SEGNAPOSTO: stella a otto punte del Logo Master.
+         Da sostituire col punzone F-chiave dopo correzione e vettorializzazione. -->
+    <div class="sigillo" id="sigillo" aria-hidden="true">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="47" fill="none" stroke="#C2663A" stroke-width="1" opacity=".45"/>
+        <circle cx="50" cy="50" r="40.5" fill="none" stroke="#C2663A" stroke-width=".6" opacity=".28"/>
+        <path d="M50 11 L56.8 39 L85 32.5 L61.5 50 L85 67.5 L56.8 61 L50 89 L43.2 61 L15 67.5 L38.5 50 L15 32.5 L43.2 39 Z" fill="#C2663A"/>
+      </svg>
+    </div>
+    <h2>Sigillato.</h2>
+    <p class="lead" style="margin-top:var(--s3)"><span id="nome-fine"></span>il tuo archivio è aperto. Ci vediamo al tavolo.</p>
+  </div>
+  </div>
+</section>
+
+</div>
+
+<div class="velo" id="velo-informativa">
+  <div class="modale">
+    <h3>Informativa</h3>
+    <p>I dati raccolti servono a eseguire il lavoro in sicurezza e ad adempiere agli obblighi di legge sui trattamenti su pelle.</p>
+    <p>Restano nell'archivio dell'atelier. Non vengono ceduti, venduti o usati per finalità diverse da quelle dichiarate.</p>
+    <p>Conservazione: dieci anni per i dati anagrafici e sanitari, come previsto per i trattamenti sanitari. Le fotografie, se acconsentite, restano finché non ne chiedi la rimozione.</p>
+    <p>Puoi chiedere accesso, correzione o cancellazione in qualsiasi momento, scrivendo all'atelier.</p>
+    <button class="btn" style="margin-top:var(--s4)" onclick="chiudiInformativa()">Ho letto</button>
+  </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4/dist/signature_pad.umd.min.js"></script>
 <script>
-  let signaturePad = null;
-  let isReturning = false;
+const ENDPOINT="https://script.google.com/macros/s/AKfycbwUWtkhfrE-iW9QFyLfjRwM9yvTRJhm7ZjNjtEDJpNewDWhATNMaRHoVlGlv2XxxJ4C/exec";
+const TOKEN="99b9fb4c16df1867069ddc54fcaf3e43c8bd36766ad615117593b95aa27f84a";
 
-  function startFlow(returning) {
-    isReturning = returning;
-    document.getElementById('step1-full-fields').style.display = returning ? 'none' : 'block';
-    document.getElementById('step1-subtitle').textContent = returning
-      ? 'Bentornato — solo nome e cognome per ritrovarti nell\'archivio.'
-      : 'I tuoi dati restano nell\'archivio dell\'atelier. Nessun uso esterno, nessuna cessione.';
-    goToStep(1);
-  }
+const CONDIZIONI=[
+ ["gravidanza_allattamento","Sei in gravidanza<br>o allattamento?",""],
+ ["anticoagulanti","Assumi<br>anticoagulanti?","Cardioaspirina, warfarin, eparina."],
+ ["allergie","Hai allergie<br>note?","Lattice, metalli, anestetici, cerotti."],
+ ["diabete","Hai il diabete?",""],
+ ["cheloidi","La tua pelle<br>tende ai cheloidi?","Cicatrici rilevate che crescono oltre il taglio."],
+ ["epilessia","Soffri<br>di epilessia?",""],
+ ["patologie_cardiache","Patologie<br>cardiache?",""],
+ ["patologie_dermatologiche","Patologie<br>della pelle?","Psoriasi, eczema, dermatiti in corso."]
+];
+let idx=0;
+const ETICHETTE={
+ gravidanza_allattamento:"Gravidanza o allattamento",
+ anticoagulanti:"Assume anticoagulanti",
+ allergie:"Allergie",
+ diabete:"Diabete",
+ cheloidi:"Pelle che tende ai cheloidi",
+ epilessia:"Epilessia",
+ patologie_cardiache:"Patologie cardiache",
+ patologie_dermatologiche:"Patologie della pelle"
+};
+const stato={};
+let tornante=false, pad=null;
 
-  function ensureSignaturePad() {
-    const canvas = document.getElementById('signature-canvas');
-    if (signaturePad) return;
-    const ratio = Math.max(window.devicePixelRatio || 1, 1);
-    canvas.width = canvas.offsetWidth * ratio;
-    canvas.height = canvas.offsetHeight * ratio;
-    canvas.getContext('2d').scale(ratio, ratio);
-    signaturePad = new SignaturePad(canvas, {
-      backgroundColor: 'rgba(0,0,0,0)',
-      penColor: '#000000',
-      minWidth: 1,
-      maxWidth: 2.2
-    });
-    signaturePad.addEventListener('beginStroke', () => {
-      document.getElementById('signature-wrap').classList.add('signed');
-    });
-  }
-
-  function clearSignature() {
-    if (signaturePad) signaturePad.clear();
-    document.getElementById('signature-wrap').classList.remove('signed');
-  }
-
-  function getSignatureBase64() {
-    if (!signaturePad || signaturePad.isEmpty()) return '';
-    return signaturePad.toDataURL('image/png').split(',')[1];
-  }
-
-  function goToStep(n) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
-    document.getElementById('screen-step' + n).classList.add('visible');
-    window.scrollTo(0, 0);
-    if (n === 3) ensureSignaturePad();
-  }
-  function goToClosing() {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
-    const nome = val('f-nome');
-    document.getElementById('closing-name').textContent = nome ? nome + ' ' : '';
-    document.getElementById('screen-closing').classList.add('visible');
-    window.scrollTo(0, 0);
-    const seal = document.getElementById('seal');
-    if (seal) { seal.classList.remove('struck'); void seal.offsetWidth; seal.classList.add('struck'); }
-  }
-  function toggleSwitch(el) { el.classList.toggle('on'); }
-
-  function validateStep1() {
-    const requiredIds = isReturning
-      ? ['f-nome','f-cognome']
-      : ['f-nome','f-cognome','f-data-nascita','f-luogo-nascita','f-indirizzo','f-comune','f-email','f-nazionalita'];
-    let firstInvalid = null;
-    let valid = true;
-    requiredIds.forEach(id => {
-      const el = document.getElementById(id);
-      const empty = !el.value || !el.value.trim();
-      el.classList.toggle('field-error', empty);
-      if (empty) { valid = false; if (!firstInvalid) firstInvalid = el; }
-    });
-    document.getElementById('step1-error').classList.toggle('visible', !valid);
-    if (firstInvalid) { firstInvalid.focus(); firstInvalid.scrollIntoView({behavior:'smooth', block:'center'}); }
-    return valid;
-  }
-
-  function validateStep2() {
-    const allergieOn = document.querySelector('.toggle[data-field="allergie"]').classList.contains('on');
-    const dettaglio = document.getElementById('f-allergie-dettaglio');
-    const empty = allergieOn && (!dettaglio.value || !dettaglio.value.trim());
-    dettaglio.classList.toggle('field-error', empty);
-    document.getElementById('step2-error').classList.toggle('visible', empty);
-    if (empty) { dettaglio.focus(); dettaglio.scrollIntoView({behavior:'smooth', block:'center'}); }
-    return !empty;
-  }
-
-  function validateStep3() {
-    const consenso = document.getElementById('f-consenso-base');
-    const hasSignature = signaturePad && !signaturePad.isEmpty();
-    const wrap = document.getElementById('signature-wrap');
-    const errEl = document.getElementById('step3-error');
-
-    let message = '';
-    if (!consenso.checked) message = 'Devi accettare il trattamento dei dati per continuare.';
-    else if (!hasSignature) message = 'Manca la firma.';
-
-    wrap.classList.toggle('has-error', !hasSignature);
-    errEl.textContent = message;
-    errEl.classList.toggle('visible', !!message);
-
-    if (message && !consenso.checked) { consenso.scrollIntoView({behavior:'smooth', block:'center'}); }
-    else if (message) { wrap.scrollIntoView({behavior:'smooth', block:'center'}); }
-
-    return !message;
-  }
-
-  function toggleAllergieDettaglio() {
-    const el = document.getElementById('field-allergie-dettaglio');
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-  }
-  function togglePanel() {
-    const el = document.getElementById('panel-consensi');
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-  }
-  function openModal() { document.getElementById('modal-informativa').classList.add('visible'); }
-  function closeModal() { document.getElementById('modal-informativa').classList.remove('visible'); }
-
-  const ENDPOINT = "https://script.google.com/macros/s/AKfycbwUWtkhfrE-iW9QFyLfjRwM9yvTRJhm7ZjNjtEDJpNewDWhATNMaRHoVlGlv2XxxJ4C/exec";
-  const TOKEN = "99b9fb4c16df1867069ddc54fcaf3e43c8bd36766ad615117593b95aa27f84a";
-
-  function toggleOn(field) {
-    return document.querySelector('.toggle[data-field="' + field + '"]').classList.contains('on') ? 'SI' : 'NO';
-  }
-  function val(id) {
-    const el = document.getElementById(id);
-    return el.value ? el.value.trim() : '';
-  }
-
-  function buildPayload() {
-    return {
-      token: TOKEN,
-      nome: val('f-nome'),
-      cognome: val('f-cognome'),
-      data_nascita: val('f-data-nascita'),
-      luogo_nascita: val('f-luogo-nascita'),
-      indirizzo: val('f-indirizzo'),
-      comune: val('f-comune'),
-      cellulare: val('f-cellulare'),
-      email: val('f-email'),
-      nazionalita: val('f-nazionalita'),
-      gravidanza_allattamento: toggleOn('gravidanza_allattamento'),
-      anticoagulanti: toggleOn('anticoagulanti'),
-      allergie: toggleOn('allergie'),
-      allergie_dettaglio: val('f-allergie-dettaglio'),
-      diabete: toggleOn('diabete'),
-      cheloidi: toggleOn('cheloidi'),
-      epilessia: toggleOn('epilessia'),
-      patologie_cardiache: toggleOn('patologie_cardiache'),
-      patologie_dermatologiche: toggleOn('patologie_dermatologiche'),
-      farmaci_in_uso: val('f-farmaci'),
-      altro: val('f-altro'),
-      consenso_trattamento_dati: document.getElementById('f-consenso-base').checked ? 'SI' : 'NO',
-      comunicazioni_commerciali: toggleOn('comunicazioni_commerciali'),
-      immagini_solo_opera: toggleOn('immagini_solo_opera'),
-      immagini_corpo_visibile: toggleOn('immagini_corpo_visibile'),
-      immagini_completa: toggleOn('immagini_completa'),
-      is_returning: isReturning ? 'SI' : 'NO',
-      firma_base64: (typeof getSignatureBase64 === 'function') ? getSignatureBase64() : ''
-    };
-  }
-
-  async function submitAndClose() {
-    if (!validateStep3()) return;
-
-    const btn = document.getElementById('btn-concludi');
-    const errEl = document.getElementById('submit-error');
-    errEl.classList.remove('visible');
-    btn.disabled = true;
-    btn.textContent = 'Invio in corso...';
-
-    try {
-      const res = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(buildPayload())
-      });
-      const data = await res.json();
-      if (data.ok) {
-        goToClosing();
-        return;
-      }
-      errEl.textContent = data.error === 'Campi obbligatori mancanti'
-        ? 'Mancano dati richiesti (' + (data.campi || []).join(', ') + ').'
-        : (data.error || 'Errore durante l\'invio. Riprova.');
-      errEl.classList.add('visible');
-    } catch (err) {
-      errEl.textContent = 'Errore di rete. Verifica la connessione e riprova.';
-      errEl.classList.add('visible');
+function montaFarmaci(){
+  stato.farmaci=''; stato.altro='';
+}
+function mostraCarta(n,verso){
+  idx=n;
+  const [k,dom,nota]=CONDIZIONI[n];
+  const c=document.getElementById('carta');
+  c.classList.remove('entra','esce'); void c.offsetWidth;
+  document.getElementById('carta-dom').innerHTML=dom;
+  document.getElementById('carta-nota').textContent=nota||'';
+  document.getElementById('conta-2').textContent=(n+1)+' di '+CONDIZIONI.length;
+  document.getElementById('campo-allergie').style.display='none';
+  document.getElementById('err-2').classList.remove('visibile');
+  c.classList.add('entra');
+}
+function rispondi(si){
+  const [k]=CONDIZIONI[idx];
+  stato[k]=si;
+  if(k==='allergie' && si){
+    const campo=document.getElementById('campo-allergie');
+    if(campo.style.display==='none'){
+      campo.style.display='block';
+      setTimeout(()=>document.getElementById('f-allergie').focus(),60);
+      return;
     }
-
-    btn.disabled = false;
-    btn.textContent = 'Firma e invia';
+    if(!v('f-allergie')){
+      document.getElementById('err-2').classList.add('visibile');
+      return;
+    }
   }
+  const c=document.getElementById('carta');
+  c.classList.add('esce');
+  setTimeout(()=>{
+    if(idx<CONDIZIONI.length-1) mostraCarta(idx+1);
+    else vai(3);
+  },190);
+}
+function indietroCarta(){
+  if(idx>0) mostraCarta(idx-1);
+  else vai(1);
+}
+
+function v(id){const e=document.getElementById(id);return e?e.value.trim():''}
+function mostra(id){
+  document.querySelectorAll('.schermo').forEach(s=>s.classList.remove('attivo'));
+  document.getElementById(id).classList.add('attivo');
+  window.scrollTo(0,0);
+}
+function avvia(returning){
+  tornante=returning;
+  document.getElementById('campi-pieni').style.display=returning?'none':'block';
+  document.getElementById('sub-1').textContent=returning
+    ? 'Bastano nome e contatto: il resto è già nell\'archivio.'
+    : 'Il nome che entra nell\'archivio, e resta.';
+  mostra('s-1');
+}
+function vai(n){
+  if(n===0) return mostra('s-intro');
+  if(n===2){ if(!validaUno()) return; mostra('s-2'); return mostraCarta(0); }
+  if(n===3){ mostra('s-3'); componiAvviso(); return setTimeout(montaFirma,90); }
+  if(n===1) return mostra('s-1');
+}
+function segnaErrore(ids,elErr,testo){
+  let ko=false;
+  ids.forEach(id=>{
+    const e=document.getElementById(id);
+    if(!e) return;
+    const vuoto=!e.value.trim();
+    e.classList.toggle('err',vuoto);
+    if(vuoto) ko=true;
+  });
+  const err=document.getElementById(elErr);
+  err.textContent=testo; err.classList.toggle('visibile',ko);
+  return !ko;
+}
+function validaUno(){
+  const ids=tornante?['f-nome','f-cognome','f-cell']:['f-nome','f-cognome','f-nascita','f-luogo','f-cell'];
+  return segnaErrore(ids,'err-1','Compila i campi segnati prima di proseguire.');
+}
+function validaDue(){
+  if(stato.allergie && !v('f-allergie')){
+    const e=document.getElementById('err-2');
+    e.textContent='Specifica quali allergie prima di proseguire.'; e.classList.add('visibile');
+    document.getElementById('f-allergie').classList.add('err');
+    return false;
+  }
+  document.getElementById('err-2').classList.remove('visibile');
+  return true;
+}
+function componiAvviso(){
+  const attive=CONDIZIONI.filter(([k])=>stato[k]).map(([k])=>{
+    if(k==='allergie'){
+      const d=v('f-allergie');
+      return d ? 'Allergie: '+d : 'Allergie';
+    }
+    return ETICHETTE[k];
+  });
+  const box=document.getElementById('avviso-salute');
+  if(!attive.length){ box.style.display='none'; return; }
+  document.getElementById('avviso-lista').innerHTML=attive.map(t=>'<li>'+t+'</li>').join('');
+  box.style.display='block';
+}
+function montaFirmaSePronta(){}
+function montaFirma(){
+  const c=document.getElementById('signature-canvas');
+  if(!c) return;
+  const r=Math.max(window.devicePixelRatio||1,1);
+  c.width=c.offsetWidth*r; c.height=c.offsetHeight*r;
+  c.getContext('2d').scale(r,r);
+  if(!pad){
+    pad=new SignaturePad(c,{penColor:'#FDF5E6',backgroundColor:'rgba(0,0,0,0)',minWidth:1.1,maxWidth:2.7});
+    pad.addEventListener('beginStroke',()=>document.getElementById('firma-box').classList.add('firmato'));
+  } else { pad.clear(); document.getElementById('firma-box').classList.remove('firmato'); }
+}
+function pulisciFirma(){ if(pad){pad.clear();document.getElementById('firma-box').classList.remove('firmato')} }
+function apriInformativa(){document.getElementById('velo-informativa').classList.add('visibile')}
+function chiudiInformativa(){document.getElementById('velo-informativa').classList.remove('visibile')}
+
+function payload(){
+  const p={
+    token:TOKEN,
+    nome:v('f-nome'), cognome:v('f-cognome'),
+    data_nascita:v('f-nascita'), luogo_nascita:v('f-luogo'),
+    indirizzo:v('f-indirizzo'), comune:v('f-comune'),
+    cellulare:v('f-cell'), email:v('f-mail'),
+    nazionalita:'',
+    allergie_dettaglio:v('f-allergie'),
+    farmaci_in_uso:'', altro:'',
+    consenso_trattamento_dati:document.getElementById('c-dati').checked?'SI':'NO',
+    comunicazioni_commerciali:'NO',
+    immagini_solo_opera:document.getElementById('c-foto').checked?'SI':'NO',
+    immagini_corpo_visibile:'NO',
+    immagini_completa:'NO',
+    is_returning:tornante?'SI':'NO',
+    firma_base64:(pad&&!pad.isEmpty())?pad.toDataURL('image/png'):''
+  };
+  CONDIZIONI.forEach(([k])=>p[k]=stato[k]?'SI':'NO');
+  return p;
+}
+
+async function sigilla(){
+  const err=document.getElementById('err-invio');
+  err.classList.remove('visibile');
+  if(!document.getElementById('c-dati').checked){
+    err.textContent='Serve il consenso al trattamento dei dati per chiudere.';
+    err.classList.add('visibile'); return;
+  }
+  if(!pad||pad.isEmpty()){
+    err.textContent='Manca la firma.';
+    err.classList.add('visibile');
+    document.getElementById('firma-box').style.borderColor='var(--error)';
+    return;
+  }
+  const btn=document.getElementById('btn-sigilla');
+  btn.disabled=true; btn.style.display='none';
+  document.getElementById('invio-brace').style.display='block';
+  try{
+    const res=await fetch(ENDPOINT,{method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(payload())});
+    const d=await res.json();
+    if(d.ok){ chiudi(); return; }
+    err.textContent=d.error==='Campi obbligatori mancanti'
+      ? 'Mancano dati richiesti ('+(d.campi||[]).join(', ')+').'
+      : (d.error||'Errore durante l\'invio. Riprova.');
+  }catch(e){
+    err.textContent='Errore di rete. Controlla la connessione e riprova.';
+  }
+  err.classList.add('visibile');
+  document.getElementById('invio-brace').style.display='none';
+  btn.style.display='block'; btn.disabled=false;
+}
+
+function chiudi(){
+  const n=v('f-nome');
+  document.getElementById('nome-fine').textContent=n?n+', ':'';
+  mostra('s-fine');
+  const s=document.getElementById('sigillo');
+  s.classList.remove('impresso'); void s.offsetWidth; s.classList.add('impresso');
+}
+
+CONDIZIONI.forEach(([k])=>stato[k]=false);
+montaFarmaci();
+window.addEventListener('resize',()=>{if(document.getElementById('s-3').classList.contains('attivo'))montaFirma()});
 </script>
 </body>
 </html>
