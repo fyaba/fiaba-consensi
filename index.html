@@ -76,16 +76,16 @@
   .hr { border: none; border-top: 1px solid var(--color-divider); margin: var(--space-6) 0; }
 
   .field { margin-bottom: var(--space-4); }
-  label { display: block; font-size: 12px; color: var(--color-neutral-700); margin-bottom: var(--space-1); letter-spacing: 0.02em; }
+  label { display: block; font-size: 15px; color: var(--color-neutral-700); margin-bottom: var(--space-1); letter-spacing: 0.02em; }
   .input, select {
     width: 100%; padding: var(--space-2) 0; background: transparent; border: none;
     border-bottom: 1px solid var(--color-divider); color: var(--color-text);
-    font-family: var(--font-body); font-size: 16px; -webkit-appearance: none; appearance: none;
+    font-family: var(--font-body); font-size: 17px; -webkit-appearance: none; appearance: none;
     border-radius: 0;
   }
   .input:focus, select:focus { outline: none; border-bottom-color: var(--color-accent); }
   .input.field-error, select.field-error { border-bottom-color: var(--color-error); }
-  .step-error { display: none; color: var(--color-error); font-size: 13px; margin: 0 0 var(--space-4); }
+  .step-error { display: none; color: var(--color-error); font-size: 15px; margin: 0 0 var(--space-4); }
   .step-error.visible { display: block; }
   select {
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%235F5E5B'/></svg>");
@@ -95,7 +95,7 @@
   }
 
   .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) 0; border-bottom: 1px solid var(--color-divider); gap: var(--space-4); cursor: pointer; }
-  .toggle-row span { font-size: 14px; line-height: 1.4; }
+  .toggle-row span { font-size: 17px; line-height: 1.45; }
   .toggle { flex-shrink: 0; width: 42px; height: 24px; border-radius: 12px; border: 1px solid var(--color-divider); background: transparent; position: relative; transition: border-color 0.2s; }
   .toggle.on { border-color: var(--color-accent); }
   .toggle-knob { width: 16px; height: 16px; border-radius: 50%; background: var(--color-text); position: absolute; top: 3px; left: 3px; transition: left 0.2s, background 0.2s; }
@@ -104,14 +104,14 @@
   .btn {
     display: block; width: 100%; padding: var(--space-3) var(--space-4);
     background: transparent; border: 1px solid var(--color-text); border-radius: var(--radius-sm);
-    color: var(--color-text); font-family: var(--font-body); font-size: 15px; font-weight: 500;
+    color: var(--color-text); font-family: var(--font-body); font-size: 17px; font-weight: 500;
     cursor: pointer; text-align: center; margin-top: var(--space-2); transition: background 0.15s;
   }
   .btn:hover { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
   .btn-accent { border-color: var(--color-accent); color: var(--color-accent); }
   .btn-accent:hover { background: var(--color-accent-100); }
   .btn-ghost {
-    border: none; background: none; color: var(--color-neutral-700); font-size: 13px;
+    border: none; background: none; color: var(--color-neutral-700); font-size: 15px;
     padding: var(--space-2) 0; width: auto; display: block; margin: var(--space-4) auto 0; cursor: pointer;
   }
 
@@ -126,34 +126,74 @@
     content: ''; position: absolute; left: 6px; top: 2px; width: 5px; height: 9px;
     border: solid var(--color-accent); border-width: 0 2px 2px 0; transform: rotate(45deg);
   }
-  .checkbox-row label { font-size: 14px; line-height: 1.5; color: var(--color-text-soft); }
+  .checkbox-row label { font-size: 16px; line-height: 1.55; color: var(--color-text-soft); }
   .checkbox-row a { color: var(--color-accent); text-decoration: underline; }
 
   #signature-placeholder {
     border: 1px dashed var(--color-divider); border-radius: var(--radius-md); height: 150px;
     display: flex; align-items: center; justify-content: center; color: var(--color-neutral-600);
-    font-size: 13px; text-align: center;
+    font-size: 16px; text-align: center;
   }
+  /* --- Carattere: gerarchia di superficie (19-09-2026) --- */
+  .intro-card {
+    background: var(--color-surface); border-radius: var(--radius-lg);
+    padding: var(--space-6) var(--space-4); margin-bottom: var(--space-4);
+    border-top: 3px solid var(--color-accent);
+    box-shadow: 0 2px 10px color-mix(in srgb, #000000 9%, transparent);
+  }
+  .intro-title {
+    font-size: 30px; line-height: 1.12; margin: 0 0 var(--space-4);
+    color: var(--color-obsidian);
+  }
+  .intro-lead {
+    font-size: 17px; line-height: 1.55; color: var(--color-text-soft);
+    margin: 0 0 var(--space-3);
+  }
+  .intro-lead strong { color: var(--color-obsidian); font-weight: 600; }
+  .intro-note {
+    font-size: 15px; line-height: 1.5; color: var(--color-neutral-700);
+    margin: var(--space-4) 0 0; padding-top: var(--space-3);
+    border-top: 1px solid var(--color-divider);
+  }
+  .field { margin-bottom: var(--space-4); }
+  .progress-dots { margin-bottom: var(--space-6); }
+  .dot { width: 9px; height: 9px; }
+  .dot.active { background: var(--color-accent); }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+  .btn-primary {
+    background: var(--color-obsidian); color: var(--color-bg);
+    border: 2px solid var(--color-obsidian); font-weight: 600; font-size: 18px;
+  }
+  .btn-primary:disabled { opacity: .55; }
   .signature-wrap {
-    border: 1px dashed var(--color-divider); border-radius: var(--radius-md); height: 150px;
-    touch-action: none; position: relative;
+    border: 2px solid var(--color-accent); border-radius: var(--radius-md); height: 190px;
+    touch-action: none; position: relative; background: #FFFFFF;
+    box-shadow: inset 0 1px 3px color-mix(in srgb, #000000 10%, transparent);
   }
+  .signature-wrap::after {
+    content: ""; position: absolute; left: 18px; right: 18px; bottom: 46px;
+    border-bottom: 1px solid color-mix(in srgb, #000000 28%, transparent);
+  }
+  .signature-wrap.signed { border-color: var(--color-obsidian); }
   .signature-wrap.has-error { border-color: var(--color-error); }
   #signature-canvas { width: 100%; height: 100%; display: block; touch-action: none; }
   .signature-hint {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    color: var(--color-neutral-600); font-size: 13px; pointer-events: none;
+    color: var(--color-accent-700); font-size: 16px; font-weight: 500; pointer-events: none;
+    gap: 9px;
   }
   .signature-wrap.signed .signature-hint { display: none; }
-  .submit-error { display: none; color: var(--color-error); font-size: 13px; margin: var(--space-3) 0 0; text-align: center; }
+  .submit-error { display: none; color: var(--color-error); font-size: 15px; margin: var(--space-3) 0 0; text-align: center; }
   .submit-error.visible { display: block; }
 
   .modal-overlay { display: none; position: fixed; inset: 0; background: color-mix(in srgb, #000000 45%, transparent); z-index: 100; align-items: center; justify-content: center; padding: var(--space-4); }
   .modal-overlay.visible { display: flex; }
   .modal-box { background: var(--color-bg); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); max-width: 440px; width: 100%; max-height: 80vh; overflow-y: auto; padding: var(--space-6); }
-  .modal-box h3 { font-size: 17px; margin: 0 0 var(--space-3); }
-  .modal-box p { font-size: 13px; line-height: 1.6; color: var(--color-text-soft); margin: 0 0 var(--space-3); }
-  .modal-draft-warning { color: var(--color-error); font-size: 12px; font-weight: 500; }
+  .modal-box h3 { font-size: 20px; margin: 0 0 var(--space-3); }
+  .modal-box p { font-size: 16px; line-height: 1.6; color: var(--color-text-soft); margin: 0 0 var(--space-3); }
+  .modal-draft-warning { color: var(--color-error); font-size: 15px; font-weight: 500; }
 </style>
 </head>
 <body>
@@ -161,16 +201,22 @@
 
     <section id="screen-intro" class="screen visible">
       <div class="heading" style="font-size: 28px; text-align: center; margin-bottom: var(--space-1);">FIABA</div>
-      <div style="text-align: center; color: var(--color-neutral-700); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: var(--space-8);">Atelier della Memoria e del Segno Permanente</div>
+      <div style="text-align: center; color: var(--color-neutral-700); font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: var(--space-6);">Atelier della Memoria e del Segno Permanente</div>
+      <div class="intro-card">
+        <h1 class="heading intro-title">Consenso informato</h1>
+        <p class="intro-lead">Prima di tatuarti, la legge e il buon senso chiedono due cose: che tu sappia cosa comporta, e che noi sappiamo come lavorare in sicurezza sulla tua pelle.</p>
+        <p class="intro-lead">Sono tre passaggi — i tuoi dati, la tua salute, il consenso da firmare. <strong>Circa 90 secondi.</strong></p>
+        <p class="intro-note">I dati restano nell'archivio dell'atelier. Nessun uso esterno, nessuna cessione.</p>
+      </div>
       <button class="btn btn-accent" style="margin-top: var(--space-6);" onclick="startFlow(false)">Prima volta qui</button>
       <button class="btn" onclick="startFlow(true)">Sono già stato qui</button>
-      <p style="font-size: 11px; color: var(--color-neutral-600); text-align: center; margin-top: var(--space-3);">Solo se hai già compilato questo modulo digitale in una visita precedente.</p>
+      <p style="font-size: 14px; color: var(--color-neutral-700); text-align: center; margin-top: var(--space-3); line-height:1.5;">Solo se hai già compilato questo modulo digitale in una visita precedente.</p>
     </section>
 
     <section id="screen-step1" class="screen">
       <div class="progress-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
-      <h2 class="heading" style="font-size: 21px; margin-bottom: var(--space-1);">Prima di tutto, tu.</h2>
-      <p style="color: var(--color-neutral-700); font-size: 13px; margin-bottom: var(--space-6);" id="step1-subtitle">I tuoi dati restano nell'archivio dell'atelier. Nessun uso esterno, nessuna cessione.</p>
+      <h2 class="heading" style="font-size: 26px; margin-bottom: var(--space-2);">Prima di tutto, tu.</h2>
+      <p style="color: var(--color-text-soft); font-size: 16px; line-height:1.5; margin-bottom: var(--space-6);" id="step1-subtitle">I tuoi dati restano nell'archivio dell'atelier. Nessun uso esterno, nessuna cessione.</p>
       <p class="step-error" id="step1-error">Compila i campi evidenziati prima di continuare.</p>
 
       <div class="field"><label>Nome</label><input class="input" type="text" id="f-nome" autocomplete="given-name"></div>
@@ -197,8 +243,8 @@
 
     <section id="screen-step2" class="screen">
       <div class="progress-dots"><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
-      <h2 class="heading" style="font-size: 21px; margin-bottom: var(--space-1);">La tua pelle, le nostre mani.</h2>
-      <p style="color: var(--color-neutral-700); font-size: 13px; margin-bottom: var(--space-4);">Queste domande ci servono per lavorare in sicurezza. Rispondi con un tocco — solo ciò che è rilevante.</p>
+      <h2 class="heading" style="font-size: 26px; margin-bottom: var(--space-2);">La tua pelle, le nostre mani.</h2>
+      <p style="color: var(--color-text-soft); font-size: 16px; line-height:1.5; margin-bottom: var(--space-4);">Queste domande ci servono per lavorare in sicurezza. Rispondi con un tocco — solo ciò che è rilevante.</p>
       <p class="step-error" id="step2-error">Specifica quali allergie prima di continuare.</p>
 
       <div class="toggle-row" onclick="toggleSwitch(this.querySelector('.toggle'))"><span>Gravidanza o allattamento</span><div class="toggle" data-field="gravidanza_allattamento"><div class="toggle-knob"></div></div></div>
@@ -216,7 +262,7 @@
       <div class="field" style="margin-top: var(--space-6);"><label>Farmaci attualmente in uso (facoltativo)</label><input class="input" type="text" id="f-farmaci"></div>
       <div class="field"><label>Altro da segnalare (facoltativo)</label><input class="input" type="text" id="f-altro"></div>
 
-      <p style="color: var(--color-neutral-600); font-size: 12px; font-style: italic; text-align: center; margin: var(--space-6) 0;">Se qualcosa cambia tra oggi e la seduta, dillo. È più importante di qualsiasi modulo.</p>
+      <p style="color: var(--color-neutral-600); font-size: 15px; font-style: italic; text-align: center; margin: var(--space-6) 0;">Se qualcosa cambia tra oggi e la seduta, dillo. È più importante di qualsiasi modulo.</p>
 
       <button class="btn btn-accent" onclick="if(validateStep2()) goToStep(3)">Avanti</button>
       <button class="btn-ghost" onclick="goToStep(1)">Indietro</button>
@@ -224,8 +270,8 @@
 
     <section id="screen-step3" class="screen">
       <div class="progress-dots"><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
-      <h2 class="heading" style="font-size: 21px; margin-bottom: var(--space-1);">Il patto.</h2>
-      <p style="color: var(--color-neutral-700); font-size: 13px; margin-bottom: var(--space-4);">Un segno permanente merita un accordo chiaro.</p>
+      <h2 class="heading" style="font-size: 26px; margin-bottom: var(--space-2);">Il patto.</h2>
+      <p style="color: var(--color-text-soft); font-size: 16px; line-height:1.5; margin-bottom: var(--space-4);">Un segno permanente merita un accordo chiaro.</p>
       <p class="step-error" id="step3-error">Devi accettare il trattamento dei dati per continuare.</p>
 
       <div class="checkbox-row">
@@ -245,11 +291,11 @@
       <p class="heading" style="text-align: center; font-size: 15px; margin-bottom: var(--space-3);">La tua firma chiude questo accordo e apre il lavoro.</p>
       <div class="signature-wrap" id="signature-wrap">
         <canvas id="signature-canvas"></canvas>
-        <div class="signature-hint" id="signature-hint">Firma qui con il dito</div>
+        <div class="signature-hint" id="signature-hint"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/></svg><span>Firma qui con il dito</span></div>
       </div>
       <button class="btn-ghost" onclick="clearSignature()">Cancella firma</button>
 
-      <button class="btn btn-accent" id="btn-concludi" style="margin-top: var(--space-6);" onclick="submitAndClose()">Concludi</button>
+      <button class="btn btn-primary" id="btn-concludi" style="margin-top: var(--space-6);" onclick="submitAndClose()">Firma e invia</button>
       <p class="submit-error" id="submit-error"></p>
       <button class="btn-ghost" onclick="goToStep(2)">Indietro</button>
     </section>
@@ -466,7 +512,7 @@
     }
 
     btn.disabled = false;
-    btn.textContent = 'Concludi';
+    btn.textContent = 'Firma e invia';
   }
 </script>
 </body>
