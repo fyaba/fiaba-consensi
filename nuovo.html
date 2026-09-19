@@ -32,14 +32,19 @@ body{
   background:var(--ink); color:var(--ivory);
   font-family:var(--sans); font-size:17px; line-height:1.55;
   -webkit-font-smoothing:antialiased;
-  min-height:100dvh;
-  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  height:100dvh; overflow:hidden;
 }
 /* materia: grana + vignettatura, due strati */
 .grain{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.42;mix-blend-mode:overlay}
+.hatch{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.055}
 .vignette{position:fixed;inset:0;pointer-events:none;z-index:1;
   background:radial-gradient(120% 85% at 50% 22%,transparent 38%,rgba(0,0,0,.62) 100%)}
-.wrap{position:relative;z-index:3;max-width:520px;margin:0 auto;padding:var(--s6) var(--s4) var(--s8)}
+.wrap{position:relative;z-index:3;max-width:520px;margin:0 auto;height:100dvh;
+  padding:calc(env(safe-area-inset-top) + var(--s4)) var(--s4) calc(env(safe-area-inset-bottom) + var(--s4));
+  display:flex;flex-direction:column}
+.corpo{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.piede{flex-shrink:0;padding-top:var(--s3)}
+.testa{flex-shrink:0}
 
 /* — tipografia — */
 h1,h2,.serif{font-family:var(--serif);font-weight:500;letter-spacing:-.015em;line-height:1.08;margin:0}
@@ -50,7 +55,7 @@ p{margin:0 0 var(--s3)}
 .muted{color:var(--ivory-mute);font-size:15px;line-height:1.55}
 
 /* — marchio che si incide — */
-.mark{width:132px;margin:0 auto var(--s4);display:block}
+.mark{width:104px;margin:0 auto var(--s3);display:block}
 .mark svg{width:100%;height:auto;display:block;overflow:visible}
 .mark #unicorno path{fill:var(--ivory)}
 .mark #stella,.mark #stella path,.mark #stella g{fill:var(--siena) !important}
@@ -69,7 +74,7 @@ p{margin:0 0 var(--s3)}
 .wordmark{font-family:var(--serif);font-size:19px;letter-spacing:.34em;
   text-indent:.34em;text-align:center;color:var(--ivory);font-weight:500}
 .kicker{text-align:center;color:var(--ivory-mute);font-size:12.5px;
-  letter-spacing:.2em;text-transform:uppercase;margin:var(--s2) 0 var(--s8)}
+  letter-spacing:.2em;text-transform:uppercase;margin:var(--s2) 0 var(--s6)}
 
 /* — tacche incise, non pallini — */
 .tacche{display:flex;gap:7px;justify-content:center;margin-bottom:var(--s6)}
@@ -111,7 +116,7 @@ label{display:block;font-size:13.5px;letter-spacing:.08em;text-transform:upperca
 
 /* — schermate — */
 .schermo{display:none}
-.schermo.attivo{display:block;animation:entra .5s cubic-bezier(.22,.9,.3,1) both}
+.schermo.attivo{display:flex;flex-direction:column;height:100%;animation:entra .5s cubic-bezier(.22,.9,.3,1) both}
 @keyframes entra{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
 /* — interruttori salute — */
@@ -125,14 +130,29 @@ label{display:block;font-size:13.5px;letter-spacing:.08em;text-transform:upperca
 .sw.on{background:var(--siena);border-color:var(--siena)}
 .sw.on::after{transform:translateX(23px);background:var(--ink)}
 
+.conta{text-align:center;font-size:13px;letter-spacing:.16em;color:var(--ivory-mute);
+  text-transform:uppercase;margin-bottom:var(--s4)}
+.carta-zona{display:flex;align-items:center;justify-content:center;overflow:hidden}
+.carta{width:100%;text-align:center}
+.carta h2{font-size:clamp(26px,7.4vw,34px);line-height:1.14}
+.carta-nota{margin-top:var(--s3);color:var(--ivory-mute);font-size:16px;min-height:1.6em}
+.carta.entra{animation:cartaIn .34s cubic-bezier(.22,.9,.3,1) both}
+@keyframes cartaIn{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+.carta.esce{animation:cartaOut .2s ease-in both}
+@keyframes cartaOut{to{opacity:0;transform:translateX(-22px)}}
+.scelte{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.scelte .btn{margin:0;padding:19px 16px;font-size:17px}
+.btn-si{border-color:var(--siena);color:var(--siena)}
+.btn-si:hover{background:var(--siena);color:#120C08}
+.btn-no:hover{border-color:var(--ivory)}
 /* — firma: la lastra — */
 .firma-box{
-  border:1.5px solid var(--line-strong);border-radius:var(--r);height:200px;
+  border:1.5px solid var(--line-strong);border-radius:var(--r);height:172px;
   position:relative;touch-action:none;background:var(--ink-2);
   box-shadow:inset 0 2px 18px rgba(0,0,0,.55);transition:border-color .25s
 }
 .firma-box.firmato{border-color:var(--siena)}
-.firma-box::after{content:"";position:absolute;left:22px;right:22px;bottom:52px;
+.firma-box::after{content:"";position:absolute;left:22px;right:22px;bottom:44px;
   border-bottom:1px solid var(--line-strong)}
 #signature-canvas{width:100%;height:100%;display:block;touch-action:none;position:relative;z-index:1}
 .firma-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
@@ -168,6 +188,18 @@ a{color:var(--siena);text-underline-offset:3px}
 .errore{display:none;color:var(--error);font-size:15px;margin:0 0 var(--s3)}
 .errore.visibile{display:block}
 
+.avviso{border:1.5px solid var(--siena);border-radius:var(--r);
+  background:linear-gradient(180deg,rgba(194,102,58,.13),rgba(194,102,58,.05));
+  padding:var(--s3) var(--s3) var(--s2);margin-bottom:var(--s4)}
+.avviso-testa{display:flex;align-items:center;gap:9px;color:var(--siena);
+  font-size:13px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;
+  margin-bottom:var(--s2)}
+.avviso ul{margin:0;padding-left:19px;list-style:none}
+.avviso li{position:relative;font-size:16.5px;line-height:1.5;color:var(--ivory);
+  margin-bottom:5px;font-weight:500}
+.avviso li::before{content:"";position:absolute;left:-15px;top:.62em;
+  width:6px;height:6px;border-radius:50%;background:var(--siena)}
+.avviso-nota{font-size:14px;color:var(--ivory-mute);margin:var(--s2) 0 0;line-height:1.45}
 /* — modale — */
 .velo{display:none;position:fixed;inset:0;background:rgba(5,4,3,.85);z-index:20;
   align-items:center;justify-content:center;padding:var(--s4)}
@@ -185,11 +217,19 @@ a{color:var(--siena);text-underline-offset:3px}
 </head>
 <body>
 <svg class="grain" aria-hidden="true"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#g)"/></svg>
+<svg class="hatch" aria-hidden="true"><defs>
+  <pattern id="tratteggio" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
+    <line x1="0" y1="0" x2="0" y2="9" stroke="#FDF5E6" stroke-width=".6"/>
+  </pattern>
+  <radialGradient id="sfuma"><stop offset="0%" stop-color="#fff" stop-opacity=".85"/><stop offset="70%" stop-color="#fff" stop-opacity=".12"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <mask id="m"><rect width="100%" height="100%" fill="url(#sfuma)"/></mask>
+</defs><rect width="100%" height="100%" fill="url(#tratteggio)" mask="url(#m)"/></svg>
 <div class="vignette" aria-hidden="true"></div>
 <div class="wrap">
 
 <!-- INGRESSO -->
 <section id="s-intro" class="schermo attivo">
+  <div class="corpo">
   <div class="mark incide" id="mark" role="img" aria-label="FIABA">
     <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g id="stella" fill="#A2542B" stroke="none">
     <g transform="translate(360.89,72.00) scale(0.147438) translate(-273.20,-168.00) translate(0.0,2505.0) scale(0.1,-0.1)">
@@ -443,7 +483,8 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
   <p class="lead">Tre passaggi — chi sei, la tua tempra, il patto da sigillare. <strong style="color:var(--ivory);font-weight:600">Novanta secondi.</strong></p>
   <p class="muted" style="border-top:1px solid var(--line);padding-top:var(--s3);margin-top:var(--s4)">I tuoi dati restano nell'archivio dell'atelier. Nessun uso esterno, nessuna cessione.</p>
 
-  <div style="margin-top:var(--s6)">
+  </div>
+  <div class="piede">
     <button class="btn btn-primario" onclick="avvia(false)">È la prima volta</button>
     <button class="btn" onclick="avvia(true)">Sono già stato inciso qui</button>
   </div>
@@ -451,7 +492,8 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
 
 <!-- 1 · ANAGRAFICA -->
 <section id="s-1" class="schermo">
-  <div class="tacche"><div class="tacca on"></div><div class="tacca"></div><div class="tacca"></div></div>
+  <div class="testa"><div class="tacche"><div class="tacca on"></div><div class="tacca"></div><div class="tacca"></div></div></div>
+  <div class="corpo">
   <h2>Chi sei.</h2>
   <p class="lead" style="margin:var(--s3) 0 var(--s6)" id="sub-1">Il nome che entra nell'archivio, e resta.</p>
   <p class="errore" id="err-1">Compila i campi segnati prima di proseguire.</p>
@@ -467,35 +509,54 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
   <div class="campo"><label for="f-cell">Cellulare</label><input class="input" type="tel" id="f-cell" autocomplete="tel"></div>
   <div class="campo"><label for="f-mail">Email</label><input class="input" type="email" id="f-mail" autocomplete="email"></div>
 
-  <button class="btn btn-primario" style="margin-top:var(--s4)" onclick="vai(2)">Continua</button>
-  <button class="btn-ghost" onclick="vai(0)">Torna indietro</button>
+  </div>
+  <div class="piede">
+    <button class="btn btn-primario" onclick="vai(2)">Continua</button>
+    <button class="btn-ghost" onclick="vai(0)">Torna indietro</button>
+  </div>
 </section>
 
-<!-- 2 · SALUTE -->
+<!-- 2 · SALUTE — una domanda per volta -->
 <section id="s-2" class="schermo">
-  <div class="tacche"><div class="tacca on"></div><div class="tacca on"></div><div class="tacca"></div></div>
-  <h2>La tua tempra.</h2>
-  <p class="lead" style="margin:var(--s3) 0 var(--s6)">Serve per lavorare in sicurezza. Un tocco per ciò che ti riguarda — niente di più.</p>
-  <p class="errore" id="err-2">Specifica quali allergie prima di proseguire.</p>
-
-  <div id="interruttori"></div>
-
-  <div class="campo" id="campo-allergie" style="display:none;margin-top:var(--s4)">
-    <label for="f-allergie">Quali allergie</label>
-    <input class="input" type="text" id="f-allergie" placeholder="lattice, metalli, anestetici…">
+  <div class="testa">
+    <div class="tacche"><div class="tacca on"></div><div class="tacca on"></div><div class="tacca"></div></div>
+    <div class="conta" id="conta-2">1 di 8</div>
   </div>
-
-  <p class="muted" style="text-align:center;font-style:italic;margin:var(--s6) 0">Se qualcosa cambia tra oggi e la seduta, dimmelo. Conta più di qualsiasi modulo.</p>
-
-  <button class="btn btn-primario" onclick="vai(3)">Continua</button>
-  <button class="btn-ghost" onclick="vai(1)">Torna indietro</button>
+  <div class="corpo carta-zona">
+    <div class="carta" id="carta">
+      <h2 id="carta-dom">&nbsp;</h2>
+      <p class="lead carta-nota" id="carta-nota"></p>
+      <div class="campo" id="campo-allergie" style="display:none;margin-top:var(--s4)">
+        <label for="f-allergie">Quali</label>
+        <input class="input" type="text" id="f-allergie" placeholder="lattice, metalli, anestetici…">
+      </div>
+      <p class="errore" id="err-2">Specifica quali allergie prima di proseguire.</p>
+    </div>
+  </div>
+  <div class="piede">
+    <div class="scelte">
+      <button class="btn btn-no" onclick="rispondi(false)">No</button>
+      <button class="btn btn-si" onclick="rispondi(true)">Sì</button>
+    </div>
+    <button class="btn-ghost" onclick="indietroCarta()">Torna indietro</button>
+  </div>
 </section>
 
 <!-- 3 · PATTO -->
 <section id="s-3" class="schermo">
-  <div class="tacche"><div class="tacca on"></div><div class="tacca on"></div><div class="tacca on"></div></div>
+  <div class="testa"><div class="tacche"><div class="tacca on"></div><div class="tacca on"></div><div class="tacca on"></div></div></div>
+  <div class="corpo">
   <h2>Il patto.</h2>
   <p class="lead" style="margin:var(--s3) 0 var(--s4)">Un segno che resta merita un accordo chiaro.</p>
+
+  <div class="avviso" id="avviso-salute" style="display:none">
+    <div class="avviso-testa">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 9v4.5"/><path d="M12 17h.01"/><path d="M10.3 3.3 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.3a2 2 0 0 0-3.4 0z"/></svg>
+      <span>Da dire ad Alberto prima di iniziare</span>
+    </div>
+    <ul id="avviso-lista"></ul>
+    <p class="avviso-nota">Se qualcosa qui è sbagliato, torna indietro e correggilo.</p>
+  </div>
   <p class="errore" id="err-3">Serve il consenso e la firma per chiudere.</p>
 
   <div class="patto" style="border:0;margin:0;padding:0">
@@ -524,14 +585,18 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
     <div class="brace"><svg viewBox="0 0 24 24" fill="#C2663A" aria-hidden="true"><path d="M12 2l1.6 6.8L20 7l-5.4 5 5.4 5-6.4-1.8L12 22l-1.6-6.8L4 17l5.4-5L4 7l6.4 1.8z"/></svg><span>Sto sigillando…</span></div>
   </div>
 
-  <button class="btn btn-primario" id="btn-sigilla" style="margin-top:var(--s4)" onclick="sigilla()">Firma e sigilla</button>
-  <p class="errore" id="err-invio" style="text-align:center"></p>
-  <button class="btn-ghost" onclick="vai(2)">Torna indietro</button>
+  </div>
+  <div class="piede">
+    <p class="errore" id="err-invio" style="text-align:center"></p>
+    <button class="btn btn-primario" id="btn-sigilla" onclick="sigilla()">Firma e sigilla</button>
+    <button class="btn-ghost" onclick="vai(2)">Torna indietro</button>
+  </div>
 </section>
 
 <!-- CHIUSURA -->
 <section id="s-fine" class="schermo">
-  <div style="text-align:center;padding:var(--s8) 0">
+  <div class="corpo" style="display:flex;align-items:center;justify-content:center">
+  <div style="text-align:center">
     <!-- SEGNAPOSTO: stella a otto punte del Logo Master.
          Da sostituire col punzone F-chiave dopo correzione e vettorializzazione. -->
     <div class="sigillo" id="sigillo" aria-hidden="true">
@@ -543,6 +608,7 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
     </div>
     <h2>Sigillato.</h2>
     <p class="lead" style="margin-top:var(--s3)"><span id="nome-fine"></span>il tuo archivio è aperto. Ci vediamo al tavolo.</p>
+  </div>
   </div>
 </section>
 
@@ -564,36 +630,69 @@ const ENDPOINT="https://script.google.com/macros/s/AKfycbwUWtkhfrE-iW9QFyLfjRwM9
 const TOKEN="99b9fb4c16df1867069ddc54fcaf3e43c8bd36766ad615117593b95aa27f84a";
 
 const CONDIZIONI=[
- ["gravidanza_allattamento","Gravidanza o allattamento in corso"],
- ["anticoagulanti","Assumo anticoagulanti"],
- ["allergie","Ho allergie note"],
- ["diabete","Diabete"],
- ["cheloidi","La mia pelle tende ai cheloidi"],
- ["epilessia","Epilessia"],
- ["patologie_cardiache","Patologie cardiache"],
- ["patologie_dermatologiche","Patologie dermatologiche"]
+ ["gravidanza_allattamento","Sei in gravidanza<br>o allattamento?",""],
+ ["anticoagulanti","Assumi<br>anticoagulanti?","Cardioaspirina, warfarin, eparina."],
+ ["allergie","Hai allergie<br>note?","Lattice, metalli, anestetici, cerotti."],
+ ["diabete","Hai il diabete?",""],
+ ["cheloidi","La tua pelle<br>tende ai cheloidi?","Cicatrici rilevate che crescono oltre il taglio."],
+ ["epilessia","Soffri<br>di epilessia?",""],
+ ["patologie_cardiache","Patologie<br>cardiache?",""],
+ ["patologie_dermatologiche","Patologie<br>della pelle?","Psoriasi, eczema, dermatiti in corso."]
 ];
+let idx=0;
+const ETICHETTE={
+ gravidanza_allattamento:"Gravidanza o allattamento",
+ anticoagulanti:"Assume anticoagulanti",
+ allergie:"Allergie",
+ diabete:"Diabete",
+ cheloidi:"Pelle che tende ai cheloidi",
+ epilessia:"Epilessia",
+ patologie_cardiache:"Patologie cardiache",
+ patologie_dermatologiche:"Patologie della pelle"
+};
 const stato={};
 let tornante=false, pad=null;
 
-function montaInterruttori(){
-  const box=document.getElementById('interruttori');
-  box.innerHTML=CONDIZIONI.map(([k,t])=>
-    `<div class="riga-sw"><span>${t}</span><div class="sw" id="sw-${k}" role="switch" aria-checked="false" tabindex="0" aria-label="${t}"></div></div>`).join('')
-   +`<div class="campo" style="margin-top:var(--s6)"><label for="f-farmaci">Farmaci in uso</label><input class="input" type="text" id="f-farmaci" placeholder="facoltativo"></div>`
-   +`<div class="campo"><label for="f-altro">Altro che dovrei sapere</label><input class="input" type="text" id="f-altro" placeholder="facoltativo"></div>`;
-  CONDIZIONI.forEach(([k])=>{
-    stato[k]=false;
-    const el=document.getElementById('sw-'+k);
-    const tog=()=>{
-      stato[k]=!stato[k];
-      el.classList.toggle('on',stato[k]);
-      el.setAttribute('aria-checked',stato[k]);
-      if(k==='allergie') document.getElementById('campo-allergie').style.display=stato[k]?'block':'none';
-    };
-    el.addEventListener('click',tog);
-    el.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tog()}});
-  });
+function montaFarmaci(){
+  stato.farmaci=''; stato.altro='';
+}
+function mostraCarta(n,verso){
+  idx=n;
+  const [k,dom,nota]=CONDIZIONI[n];
+  const c=document.getElementById('carta');
+  c.classList.remove('entra','esce'); void c.offsetWidth;
+  document.getElementById('carta-dom').innerHTML=dom;
+  document.getElementById('carta-nota').textContent=nota||'';
+  document.getElementById('conta-2').textContent=(n+1)+' di '+CONDIZIONI.length;
+  document.getElementById('campo-allergie').style.display='none';
+  document.getElementById('err-2').classList.remove('visibile');
+  c.classList.add('entra');
+}
+function rispondi(si){
+  const [k]=CONDIZIONI[idx];
+  stato[k]=si;
+  if(k==='allergie' && si){
+    const campo=document.getElementById('campo-allergie');
+    if(campo.style.display==='none'){
+      campo.style.display='block';
+      setTimeout(()=>document.getElementById('f-allergie').focus(),60);
+      return;
+    }
+    if(!v('f-allergie')){
+      document.getElementById('err-2').classList.add('visibile');
+      return;
+    }
+  }
+  const c=document.getElementById('carta');
+  c.classList.add('esce');
+  setTimeout(()=>{
+    if(idx<CONDIZIONI.length-1) mostraCarta(idx+1);
+    else vai(3);
+  },190);
+}
+function indietroCarta(){
+  if(idx>0) mostraCarta(idx-1);
+  else vai(1);
 }
 
 function v(id){const e=document.getElementById(id);return e?e.value.trim():''}
@@ -612,8 +711,8 @@ function avvia(returning){
 }
 function vai(n){
   if(n===0) return mostra('s-intro');
-  if(n===2){ if(!validaUno()) return; montaFirmaSePronta(); return mostra('s-2'); }
-  if(n===3){ if(!validaDue()) return; mostra('s-3'); return setTimeout(montaFirma,90); }
+  if(n===2){ if(!validaUno()) return; mostra('s-2'); return mostraCarta(0); }
+  if(n===3){ mostra('s-3'); componiAvviso(); return setTimeout(montaFirma,90); }
   if(n===1) return mostra('s-1');
 }
 function segnaErrore(ids,elErr,testo){
@@ -643,6 +742,19 @@ function validaDue(){
   document.getElementById('err-2').classList.remove('visibile');
   return true;
 }
+function componiAvviso(){
+  const attive=CONDIZIONI.filter(([k])=>stato[k]).map(([k])=>{
+    if(k==='allergie'){
+      const d=v('f-allergie');
+      return d ? 'Allergie: '+d : 'Allergie';
+    }
+    return ETICHETTE[k];
+  });
+  const box=document.getElementById('avviso-salute');
+  if(!attive.length){ box.style.display='none'; return; }
+  document.getElementById('avviso-lista').innerHTML=attive.map(t=>'<li>'+t+'</li>').join('');
+  box.style.display='block';
+}
 function montaFirmaSePronta(){}
 function montaFirma(){
   const c=document.getElementById('signature-canvas');
@@ -668,7 +780,7 @@ function payload(){
     cellulare:v('f-cell'), email:v('f-mail'),
     nazionalita:'',
     allergie_dettaglio:v('f-allergie'),
-    farmaci_in_uso:v('f-farmaci'), altro:v('f-altro'),
+    farmaci_in_uso:'', altro:'',
     consenso_trattamento_dati:document.getElementById('c-dati').checked?'SI':'NO',
     comunicazioni_commerciali:'NO',
     immagini_solo_opera:document.getElementById('c-foto').checked?'SI':'NO',
@@ -722,7 +834,8 @@ function chiudi(){
   s.classList.remove('impresso'); void s.offsetWidth; s.classList.add('impresso');
 }
 
-montaInterruttori();
+CONDIZIONI.forEach(([k])=>stato[k]=false);
+montaFarmaci();
 window.addEventListener('resize',()=>{if(document.getElementById('s-3').classList.contains('attivo'))montaFirma()});
 </script>
 </body>
