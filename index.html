@@ -757,6 +757,10 @@ let tornante=false;      // "sono gia' stato inciso qui"
 let pad=null;
 let firmaDati=null;      // le pennellate, al sicuro da ogni resize
 let inTransizione=false; // assorbe i tap rapidi durante l'uscita di una carta
+/* I campi che il backend ha chiesto e che il percorso "sono gia' stato inciso qui"
+   teneva nascosti: una volta rivelati diventano obbligatori anche qui, altrimenti
+   si torna alla firma con il campo ancora vuoto e il rifiuto si ripete uguale. */
+const richiestiDalBackend=new Set();
 const stato={};
 const risposte=new Set();
 
@@ -804,6 +808,7 @@ function mostra(id){
 function avvia(returning){
   tornante=returning;
   daCorreggere=0;
+  richiestiDalBackend.clear();
   el('campi-pieni').style.display=returning?'none':'block';
   el('campo-nazionalita').style.display=returning?'none':'block';
   el('sub-1').textContent=returning
@@ -918,8 +923,9 @@ function validaUno(){
   const ids=tornante
     ? ['f-nome','f-cognome','f-cell']
     : ['f-nome','f-cognome','f-nascita','f-luogo','f-indirizzo','f-comune','f-mail','f-cell','f-nazionalita'];
+  richiestiDalBackend.forEach(id=>{ if(ids.indexOf(id)<0) ids.push(id) });
   if(!segnaErrore(ids,'err-1','Compila i campi segnati prima di proseguire.')) return false;
-  if(!tornante&&!dataPlausibile()){
+  if((!tornante||richiestiDalBackend.has('f-nascita'))&&!dataPlausibile()){
     const e=el('f-nascita');
     e.classList.add('err'); e.setAttribute('aria-invalid','true');
     const err=el('err-1');
@@ -1009,6 +1015,7 @@ function portaAiCampiMancanti(campi){
     // va mostrato: altrimenti l'errore nomina qualcosa che non c'e'
     const blocco=e.closest('#campi-pieni,#campo-nazionalita');
     if(blocco) blocco.style.display='block';
+    richiestiDalBackend.add(CAMPI_FORM[c][0]);
     e.classList.add('err'); e.setAttribute('aria-invalid','true');
   });
   daCorreggere=noti.length;
