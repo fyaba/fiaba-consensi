@@ -15,12 +15,12 @@
   --ink-3:#1E1A17;         /* superficie alta */
   --ivory:#FDF5E6;         /* Ivory, il testo */
   --ivory-soft:#C9BFAE;    /* testo secondario, tinto dal fondo */
-  --ivory-mute:#8C8377;    /* terziario */
+  --ivory-mute:#A89F92;    /* terziario: 7,5:1 sul fondo (era #8C8377, 5,3:1) */
   --siena:#C2663A;         /* brace: accento vivo su fondo scuro */
   --siena-deep:#A2542B;    /* Siena canonico */
   --error:#D9705E;
   --line:rgba(253,245,230,.13);
-  --line-strong:rgba(253,245,230,.26);
+  --line-strong:rgba(253,245,230,.40); /* 3,8:1: bordi dei campi visibili anche sotto la lampada (era .26, 2,1:1) */
   --serif:"Fraunces","Iowan Old Style",Georgia,serif;
   --sans:"Inter","Helvetica Neue",Arial,sans-serif;
   --s1:6px; --s2:12px; --s3:18px; --s4:24px; --s6:36px; --s8:52px;
@@ -181,7 +181,7 @@ input[type=date]:not(.pieno):not(:focus)::-webkit-datetime-edit{opacity:0}
 .sw.on{background:var(--siena);border-color:var(--siena)}
 .sw.on::after{transform:translateX(23px);background:var(--ink)}
 
-.conta{text-align:center;font-size:13px;letter-spacing:.16em;color:var(--ivory-mute);
+.conta{text-align:center;font-size:14px;letter-spacing:.16em;color:var(--ivory-mute);
   text-transform:uppercase;margin-bottom:var(--s4)}
 .carta-zona{display:flex;align-items:center;justify-content:center;min-height:44vh}
 .carta{width:100%;text-align:center}
@@ -193,12 +193,10 @@ input[type=date]:not(.pieno):not(:focus)::-webkit-datetime-edit{opacity:0}
 @keyframes cartaOut{to{opacity:0;transform:translateX(-22px)}}
 .scelte{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
 .scelte .btn{margin:0;padding:19px 16px;font-size:17px}
-.btn-si{border-color:var(--siena);color:var(--siena)}
-.btn-si:hover{background:var(--siena);color:#120C08}
-.btn-no:hover{border-color:var(--ivory)}
+/* Si e No identici: su una domanda sanitaria il colore non deve suggerire la risposta. */
+.btn-si:hover,.btn-no:hover{border-color:var(--ivory)}
 /* Chi torna su una carta gia' risposta deve vedere cosa aveva risposto. */
-.btn-si.scelto{background:var(--siena);color:#120C08}
-.btn-no.scelto{border-color:var(--ivory);color:var(--ivory);background:rgba(253,245,230,.08)}
+.btn-si.scelto,.btn-no.scelto{border-color:var(--ivory);color:var(--ivory);background:rgba(253,245,230,.08)}
 /* — firma: la lastra — */
 .firma-box{
   border:1.5px solid var(--line-strong);border-radius:var(--r);height:172px;
@@ -255,7 +253,7 @@ button.errore[data-bersaglio=""]{cursor:default}
 }
 .evidenzia{animation:richiama 1.15s ease-out 2;border-radius:var(--r)}
 /* marca di obbligo/facolta' sui due consensi: erano indistinguibili */
-.tag-obbl,.tag-facolt{display:inline-block;font-size:11px;letter-spacing:.13em;
+.tag-obbl,.tag-facolt{display:inline-block;font-size:12px;letter-spacing:.13em;
   text-transform:uppercase;border-radius:2px;padding:1px 6px;margin-left:2px;
   white-space:nowrap;vertical-align:1px}
 .tag-obbl{color:var(--siena);border:1px solid rgba(194,102,58,.55)}
@@ -565,7 +563,7 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
   </div>
   <div class="piede">
     <button class="btn btn-primario" onclick="avvia(false)">È la prima volta</button>
-    <button class="btn" onclick="avvia(true)">Sono già stato inciso qui</button>
+    <button class="btn" onclick="avvia(true)">Non è la prima volta</button>
   </div>
 </section>
 
@@ -656,7 +654,7 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
       <label for="c-dati">Acconsento al trattamento dei miei dati personali e sanitari per le finalità descritte. <span class="tag-obbl">necessario</span> <a href="#" onclick="apriInformativa();return false">Leggi l'informativa</a></label>
     </div>
     <div class="riga-check" id="riga-foto">
-      <input type="checkbox" id="c-foto" onchange="aggiornaEsitoFoto()">
+      <input type="checkbox" id="c-foto" onchange="fotoScelta=true;aggiornaEsitoFoto()">
       <label for="c-foto">Acconsento alle fotografie del lavoro e al loro uso nel portfolio dell'atelier. <span class="tag-facolt">facoltativo</span></label>
     </div>
     <p class="esito-foto" id="esito-foto"></p>
@@ -753,6 +751,7 @@ const CAMPI_FORM={
 
 let idx=0;               // carta salute corrente
 let daCorreggere=0;      // rientro da un campo mancante: si torna alla firma
+let fotoScelta=false;    // la cliente ha toccato la casella delle foto?
 let tornante=false;      // "sono gia' stato inciso qui"
 let pad=null;
 let firmaDati=null;      // le pennellate, al sicuro da ogni resize
@@ -1041,7 +1040,10 @@ function componiAvviso(){
   }).map(t=>'<li>'+t+'</li>'));
   // il rifiuto delle foto non e' una condizione clinica, ma ad Alberto
   // serve saperlo: sta nello stesso avviso, con un peso diverso
-  if(!el('c-foto').checked) voci.push('<li class="neutra">Fotografie: non acconsentite</li>');
+  // finche' la cliente non tocca la casella, non si scrive un rifiuto che non ha dato
+  if(!el('c-foto').checked) voci.push(fotoScelta
+    ? '<li class="neutra">Fotografie: non acconsentite</li>'
+    : '<li class="neutra">Fotografie: da scegliere qui sotto</li>');
   const box=el('avviso-salute');
   el('avviso-lista').innerHTML=voci.join('');   // svuota anche quando non c'e' nulla
   box.style.display=voci.length?'block':'none';
