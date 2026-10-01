@@ -718,6 +718,11 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
 <script>
 const ENDPOINT="https://script.google.com/macros/s/AKfycbwUWtkhfrE-iW9QFyLfjRwM9yvTRJhm7ZjNjtEDJpNewDWhATNMaRHoVlGlv2XxxJ4C/exec";
 const TOKEN="99b9fb4c16df1867069ddc54fcaf3e43c8bd36766ad615117593b95aa27f84a";
+/* Un codice per compilazione, uguale a ogni tentativo: se la risposta si perde
+   ma il dato e' gia' salvato, il backend riconosce il codice e risponde ok
+   senza riscrivere (02-10-2026). */
+const ID_INVIO=(window.crypto&&crypto.randomUUID)?crypto.randomUUID()
+  :'f'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
 
 const CONDIZIONI=[
  ["gravidanza_allattamento","Sei in gravidanza<br>o allattamento?",""],
@@ -1109,6 +1114,7 @@ function payload(){
   if(firmaDati&&firmaDati.length&&pad&&pad.isEmpty()) pad.fromData(firmaDati);
   const p={
     token:TOKEN,
+    id_invio:ID_INVIO,
     nome:v('f-nome'), cognome:v('f-cognome'),
     data_nascita:v('f-nascita'), luogo_nascita:v('f-luogo'),
     indirizzo:v('f-indirizzo'), comune:v('f-comune'),
@@ -1147,6 +1153,22 @@ function braceAccesa(accesa){
   el('invio-brace').style.display=accesa?'block':'none';
 }
 
+/* Tre tentativi con lo stesso codice. Riprova solo se la risposta non arriva o
+   non e' leggibile; un rifiuto del server (campi mancanti...) non si ripete. */
+async function inviaConRiprova(){
+  const corpo=JSON.stringify(payload());
+  let ultimo;
+  for(let t=0;t<3;t++){
+    if(t) await new Promise(r=>setTimeout(r,2000*t));
+    try{
+      const res=await fetch(ENDPOINT,{method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},body:corpo});
+      return await res.json();
+    }catch(e){ ultimo=e; }
+  }
+  throw ultimo;
+}
+
 async function sigilla(){
   const err=el('err-invio');
   err.classList.remove('visibile'); err.dataset.bersaglio='';
@@ -1164,10 +1186,7 @@ async function sigilla(){
 
   braceAccesa(true);
   try{
-    const res=await fetch(ENDPOINT,{method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify(payload())});
-    const d=await res.json();
+    const d=await inviaConRiprova();
     if(d.ok){ chiudi(); return; }
     braceAccesa(false);   // il bottone deve tornare: da qui si riprova
     if(d.error==='Campi obbligatori mancanti'&&(d.campi||[]).length){
@@ -1177,7 +1196,7 @@ async function sigilla(){
     mostraErroreInvio(d.error||'Errore durante l\'invio. Riprova.','');
   }catch(e){
     braceAccesa(false);
-    mostraErroreInvio('Errore di rete. Controlla la connessione e riprova.','');
+    mostraErroreInvio('Errore di rete. Controlla la connessione e riprova: se l\'invio era gia\' arrivato, non viene duplicato.','');
   }
 }
 
