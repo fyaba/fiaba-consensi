@@ -717,7 +717,8 @@ l-148 7 -17 -39 c-30 -70 -116 -307 -136 -374 -53 -177 -74 -271 -95 -420 -7
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4/dist/signature_pad.umd.min.js"></script>
 <script>
 const ENDPOINT="https://script.google.com/macros/s/AKfycbwUWtkhfrE-iW9QFyLfjRwM9yvTRJhm7ZjNjtEDJpNewDWhATNMaRHoVlGlv2XxxJ4C/exec";
-const TOKEN="99b9fb4c16df1867069ddc54fcaf3e43c8bd36766ad615117593b95aa27f84a";
+/* Nessun segreto qui: la pagina e' pubblica e tutto cio' che contiene lo legge chiunque.
+   L'autorizzazione dell'invio sta lato server (Apps Script). */
 /* Un codice per compilazione, uguale a ogni tentativo: se la risposta si perde
    ma il dato e' gia' salvato, il backend riconosce il codice e risponde ok
    senza riscrivere (02-10-2026). */
@@ -1113,7 +1114,6 @@ function chiudiInformativa(){el('velo-informativa').classList.remove('visibile')
 function payload(){
   if(firmaDati&&firmaDati.length&&pad&&pad.isEmpty()) pad.fromData(firmaDati);
   const p={
-    token:TOKEN,
     id_invio:ID_INVIO,
     nome:v('f-nome'), cognome:v('f-cognome'),
     data_nascita:v('f-nascita'), luogo_nascita:v('f-luogo'),
